@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2027考研上岸助力站</title>
+    <!-- Tailwind CSS 快速样式 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 字体图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- 农历库 -->
+    <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.6.13/dist/lunar.min.js"></script>
+    <!-- Tailwind 自定义配置（优化配色+动画） -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { 
+                extend: { 
+                    colors: { 
+                        primary: '#1E40AF', // 沉稳考研蓝（主色）
+                        success: '#059669', // 上岸绿（打卡）
+                        warning: '#F97316', // 励志橙（倒计时/愿望）
+                        light: '#F8FAFC',   // 浅色背景
+                        dark: '#0F172A'     // 深色背景
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif']
+                    }
+                } 
+            }
+        }
+    </script>
+    <!-- 优化后的CSS样式（高级质感+动效+护眼） -->
+    <style type="text/tailwindcss">
+        @layer utilities {
+            /* 卡片基础样式 */
+            .card {
+                @apply bg-white dark:bg-dark/90 rounded-2xl p-6 shadow-lg transition-all duration-300 border border-gray-100 dark:border-gray-800;
+            }
+            /* 卡片悬浮上浮效果 */
+            .card-hover {
+                @apply hover:-translate-y-1 hover:shadow-xl;
+            }
+            /* 按钮基础样式 */
+            .btn {
+                @apply px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2;
+            }
+            /* 按钮悬浮缩放 */
+            .btn-hover {
+                @apply hover:scale-105 active:scale-95;
+            }
+            /* 渐变文字（励志语专用） */
+            .text-gradient {
+                @apply bg-gradient-to-r from-primary to-warning bg-clip-text text-transparent;
+            }
+            /* 倒计时动画 */
+            .animate-count {
+                animation: count 0.6s ease-in-out;
+            }
+            @keyframes count {
+                0% { transform: scale(1.15); opacity: 0.8; }
+                100% { transform: scale(1); opacity: 1; }
+            }
+            /* 打卡成功抖动 */
+            .animate-check {
+                animation: check 0.4s ease;
+            }
+            @keyframes check {
+                0%, 100% { transform: translateX(0); }
+                25% { transform: translateX(-3px); }
+                75% { transform: translateX(3px); }
+            }
+        }
+
+        /* 全局滚动条美化 */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .dark ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #475569;
+        }
+
+        /* 全局样式 */
+        * {
+            scroll-behavior: smooth;
+        }
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%);
+        }
+        .dark body {
+            background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+        }
+    </style>
+</head>
+<body class="text-gray-800 dark:text-gray-200 transition-colors duration-300">
+    <!-- 导航栏 -->
+    <nav class="sticky top-0 bg-white/90 dark:bg-dark/90 backdrop-blur-sm shadow-sm z-10 py-3 px-4 flex justify-between items-center">
+        <h1 class="text-xl font-bold text-gradient"><i class="fas fa-graduation-cap mr-2"></i>2027考研上岸</h1>
+        <button id="themeBtn" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+            <i class="fas fa-moon dark:hidden text-gray-600"></i>
+            <i class="fas fa-sun hidden dark:inline text-warning"></i>
+        </button>
+    </nav>
+
+    <div class="max-w-7xl mx-auto p-4 grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
+        <!-- 左侧：日期+倒计时+励志语 -->
+        <div class="md:col-span-2 space-y-6">
+            <!-- 日期&倒计时模块 -->
+            <div class="card card-hover">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- 实时日期 -->
+                    <div class="text-center md:text-left">
+                        <h2 class="text-lg font-semibold mb-2 text-gray-700 dark:text-gray-300">今日日期</h2>
+                        <p id="solarDate" class="text-2xl font-bold"></p>
+                        <p id="lunarDate" class="text-gray-500 dark:text-gray-400 mt-1"></p>
+                    </div>
+                    <!-- 考研倒计时 -->
+                    <div class="text-center">
+                        <h2 class="text-lg font-semibold mb-2 text-gray-700 dark:text-gray-300">2027考研倒计时</h2>
+                        <div id="countDown" class="text-3xl font-bold text-gradient animate-count"></div>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">初试时间：2027年12月27日</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 每日励志语+小贴士 -->
+            <div class="card card-hover">
+                <h2 class="text-lg font-semibold mb-3 flex items-center text-gray-700 dark:text-gray-300">
+                    <i class="fas fa-quote-left text-primary mr-2"></i>每日励志
+                </h2>
+                <p id="dailyQuote" class="text-xl text-center py-6 italic text-gradient font-medium"></p>
+                <p id="dailyTip" class="text-gray-500 dark:text-gray-400 text-center text-sm mt-2 bg-gray-50 dark:bg-gray-800 py-2 rounded-lg"></p>
+            </div>
+
+            <!-- 每日打卡模块 -->
+            <div class="card card-hover">
+                <h2 class="text-lg font-semibold mb-4 flex items-center text-gray-700 dark:text-gray-300">
+                    <i class="fas fa-check-circle text-success mr-2"></i>每日学习打卡
+                </h2>
+                <!-- 打卡统计 -->
+                <div class="flex gap-8 mb-5 justify-center">
+                    <div class="text-center">
+                        <p class="text-3xl font-bold text-primary" id="totalDays">0</p>
+                        <p class="text-sm text-gray-500 mt-1">累计打卡</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-3xl font-bold text-warning" id="continueDays">0</p>
+                        <p class="text-sm text-gray-500 mt-1">连续打卡</p>
+                    </div>
+                </div>
+                <!-- 打卡上传 -->
+                <div class="flex flex-col md:flex-row gap-4 items-center">
+                    <input type="file" id="uploadImg" accept="image/*" class="hidden">
+                    <label for="uploadImg" class="btn bg-primary text-white btn-hover">
+                        <i class="fas fa-upload mr-1"></i>上传打卡照片
+                    </label>
+                    <button id="checkInBtn" class="btn bg-success text-white btn-hover">
+                        <i class="fas fa-check mr-1"></i>完成今日打卡
+                    </button>
+                </div>
+                <!-- 打卡预览 -->
+                <div id="previewBox" class="mt-4 hidden rounded-lg overflow-hidden shadow-md">
+                    <img id="previewImg" class="w-full max-h-60 object-contain">
+                </div>
+                <!-- 历史打卡墙 -->
+                <div class="mt-6">
+                    <h3 class="text-sm font-semibold mb-2 text-gray-600 dark:text-gray-400">历史打卡记录</h3>
+                    <div id="checkInWall" class="grid grid-cols-3 gap-2 max-h-40 overflow-y-auto"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧：愿望清单+考研节点 -->
+        <div class="space-y-6">
+            <!-- 上岸愿望清单 -->
+            <div class="card card-hover">
+                <h2 class="text-lg font-semibold mb-4 flex items-center text-gray-700 dark:text-gray-300">
+                    <i class="fas fa-star text-warning mr-2"></i>上岸愿望清单
+                </h2>
+                <div class="flex gap-2 mb-4">
+                    <input id="wishInput" placeholder="输入上岸愿望..." 
+                        class="flex-1 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-800 outline-none transition-all focus:ring-2 focus:ring-primary/50">
+                    <button id="addWishBtn" class="btn bg-primary text-white btn-hover px-3">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+                <ul id="wishList" class="max-h-60 overflow-y-auto space-y-2"></ul>
+                <button id="resetWishBtn" class="mt-4 text-sm text-gray-500 hover:text-red-500 transition-colors">重置清单</button>
+            </div>
+
+            <!-- 考研重要节点 -->
+            <div class="card card-hover">
+                <h2 class="text-lg font-semibold mb-4 flex items-center text-gray-700 dark:text-gray-300">
+                    <i class="fas fa-calendar-alt text-primary mr-2"></i>考研关键节点
+                </h2>
+                <ul class="space-y-3 text-sm">
+                    <li class="flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                        <span>预报名</span><span class="text-primary font-medium">2027年9月下旬</span>
+                    </li>
+                    <li class="flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                        <span>正式报名</span><span class="text-primary font-medium">2027年10月中旬</span>
+                    </li>
+                    <li class="flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                        <span>现场确认</span><span class="text-primary font-medium">2027年11月上旬</span>
+                    </li>
+                    <li class="flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                        <span>初试考试</span><span class="text-warning font-medium">2027年12月27日</span>
+                    </li>
+                    <li class="flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                        <span>成绩查询</span><span class="text-primary font-medium">2028年2月中旬</span>
+                    </li>
+                    <li class="flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                        <span>复试调剂</span><span class="text-primary font-medium">2028年3-4月</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="text-center py-6 text-gray-500 dark:text-gray-400 text-sm mt-8">
+        <p>2027考研上岸助力站 | 数据存储在本地，刷新不丢失</p>
+        <p class="mt-1">星光不负赶路人，时光不负考研人</p>
+    </footer>
+
+    <script>
+        // 1. 基础配置
+        const EXAM_DATE = new Date('2027-12-27 00:00:00');
+        const QUOTES = [
+            "彼方尚有荣光在，何须悲叹少年轻",
+            "星光不负赶路人，时光不负考研人",
+            "那些看似不起波澜的日复一日，会在某天让你看到坚持的意义",
+            "苦尽甘来的那一天，山河星月都做贺礼",
+            "你走的每一步，都藏着未来的影子",
+            "放弃很容易，但坚持一定很酷",
+            "今朝秣马坚如铁，他日功成朝天阙"
+        ];
+        const TIPS = [
+            "每天背单词30分钟，坚持到考前",
+            "错题本是提分关键，定期复盘",
+            "保证睡眠，效率比时长更重要",
+            "政治后期押题卷必刷，选择题多练",
+            "英语阅读精读，吃透长难句"
+        ];
+
+        // 2. DOM元素获取
+        const solarDate = document.getElementById('solarDate');
+        const lunarDate = document.getElementById('lunarDate');
+        const countDown = document.getElementById('countDown');
+        const dailyQuote = document.getElementById('dailyQuote');
+        const dailyTip = document.getElementById('dailyTip');
+        const themeBtn = document.getElementById('themeBtn');
+        const uploadImg = document.getElementById('uploadImg');
+        const previewBox = document.getElementById('previewBox');
+        const previewImg = document.getElementById('previewImg');
+        const checkInBtn = document.getElementById('checkInBtn');
+        const totalDays = document.getElementById('totalDays');
+        const continueDays = document.getElementById('continueDays');
+        const checkInWall = document.getElementById('checkInWall');
+        const wishInput = document.getElementById('wishInput');
+        const addWishBtn = document.getElementById('addWishBtn');
+        const wishList = document.getElementById('wishList');
+        const resetWishBtn = document.getElementById('resetWishBtn');
+
+        // 3. 主题切换
+        themeBtn.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+        });
+        if(localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark');
+
+        // 4. 日期&倒计时
+        function updateDate() {
+            const now = new Date();
+            const solar = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 周${'日一二三四五六'[now.getDay()]}`;
+            solarDate.textContent = solar;
+            const lunar = Lunar.fromDate(now);
+            lunarDate.textContent = `${lunar.getYearInChinese()}年${lunar.getMonthInChinese()}月${lunar.getDayInChinese()}`;
+            
+            const diff = EXAM_DATE - now;
+            const day = Math.floor(diff / 86400000);
+            const hour = Math.floor((diff % 86400000) / 3600000);
+            const min = Math.floor((diff % 3600000) / 60000);
+            const sec = Math.floor((diff % 60000) / 1000);
+            countDown.innerHTML = `${day}天${hour}时${min}分${sec}秒`;
+        }
+        setInterval(updateDate, 1000);
+        updateDate();
+
+        // 5. 每日励志语&小贴士
+        function setDailyContent() {
+            const day = new Date().getDate();
+            dailyQuote.textContent = QUOTES[day % QUOTES.length];
+            dailyTip.textContent = `备考小贴士：${TIPS[day % TIPS.length]}`;
+        }
+        setDailyContent();
+
+        // 6. 打卡功能
+        function initCheckIn() {
+            if(!localStorage.getItem('checkInData')) {
+                localStorage.setItem('checkInData', JSON.stringify({
+                    total: 0, continue: 0, lastDate: '', imgs: []
+                }));
+            }
+            const data = JSON.parse(localStorage.getItem('checkInData'));
+            totalDays.textContent = data.total;
+            continueDays.textContent = data.continue;
+            renderCheckInWall(data.imgs);
+        }
+
+        function renderCheckInWall(imgs) {
+            checkInWall.innerHTML = imgs.map(img => 
+                `<img src="${img}" class="w-full h-20 object-cover rounded-lg shadow-sm">`
+            ).join('');
+        }
+
+        uploadImg.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if(file) {
+                const reader = new FileReader();
+                reader.onload = (res) => {
+                    previewImg.src = res.target.result;
+                    previewBox.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        checkInBtn.addEventListener('click', () => {
+            if(!previewImg.src) return alert('请先上传打卡照片！');
+            const today = new Date().toDateString();
+            const data = JSON.parse(localStorage.getItem('checkInData'));
+            
+            if(data.lastDate === today) return alert('今日已打卡！');
+            
+            data.total += 1;
+            data.continue = (new Date(data.lastDate).getTime() === new Date(today).getTime() - 86400000) ? data.continue + 1 : 1;
+            data.lastDate = today;
+            data.imgs.unshift(previewImg.src);
+            if(data.imgs.length > 20) data.imgs.pop();
+            
+            localStorage.setItem('checkInData', JSON.stringify(data));
+            initCheckIn();
+            checkInBtn.classList.add('animate-check');
+            setTimeout(() => checkInBtn.classList.remove('animate-check'), 400);
+            alert('打卡成功！继续坚持✨');
+            previewBox.classList.add('hidden');
+            uploadImg.value = '';
+        });
+
+        // 7. 愿望清单功能
+        function initWish() {
+            if(!localStorage.getItem('wishList')) localStorage.setItem('wishList', JSON.stringify([]));
+            renderWishList();
+        }
+
+        function renderWishList() {
+            const list = JSON.parse(localStorage.getItem('wishList'));
+            wishList.innerHTML = list.map((item, index) => 
+                `<li class="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-800 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <span>${item}</span>
+                    <button onclick="delWish(${index})" class="text-red-500 hover:text-red-600 transition-colors"><i class="fas fa-trash"></i></button>
+                </li>`
+            ).join('');
+        }
+
+        addWishBtn.addEventListener('click', () => {
+            const val = wishInput.value.trim();
+            if(!val) return alert('请输入愿望内容！');
+            const list = JSON.parse(localStorage.getItem('wishList'));
+            list.push(val);
+            localStorage.setItem('wishList', JSON.stringify(list));
+            renderWishList();
+            wishInput.value = '';
+        });
+
+        window.delWish = (index) => {
+            const list = JSON.parse(localStorage.getItem('wishList'));
+            list.splice(index, 1);
+            localStorage.setItem('wishList', JSON.stringify(list));
+            renderWishList();
+        };
+
+        resetWishBtn.addEventListener('click', () => {
+            if(confirm('确定要清空所有愿望吗？')) {
+                localStorage.setItem('wishList', JSON.stringify([]));
+                renderWishList();
+            }
+        });
+
+        // 8. 初始化
+        window.onload = () => {
+            initCheckIn();
+            initWish();
+        };
+    </script>
+</body>
+</html>
