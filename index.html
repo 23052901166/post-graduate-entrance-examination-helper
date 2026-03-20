@@ -24,56 +24,34 @@
                     }
                 } 
             }
-        }
+        };
     </script>
     <style type="text/tailwindcss">
         @layer utilities {
-            .card {
-                @apply bg-white dark:bg-dark/90 rounded-2xl p-6 shadow-lg transition-all duration-300 border border-gray-100 dark:border-gray-800;
-            }
-            .card-hover {
-                @apply hover:-translate-y-1 hover:shadow-xl;
-            }
-            .btn {
-                @apply px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2;
-            }
-            .btn-hover {
-                @apply hover:scale-105 active:scale-95;
-            }
-            .text-gradient {
-                @apply bg-gradient-to-r from-primary to-warning bg-clip-text text-transparent;
-            }
-            .animate-count {
-                animation: count 0.6s ease-in-out;
-            }
-            @keyframes count {
-                0% { transform: scale(1.15); opacity: 0.8; }
-                100% { transform: scale(1); opacity: 1; }
-            }
-            .animate-check {
-                animation: check 0.4s ease;
-            }
-            @keyframes check {
-                0%, 100% { transform: translateX(0); }
-                25% { transform: translateX(-3px); }
-                75% { transform: translateX(3px); }
-            }
+            .card { @apply bg-white dark:bg-dark/90 rounded-2xl p-6 shadow-lg transition-all duration-300 border border-gray-100 dark:border-gray-800; }
+            .card-hover { @apply hover:-translate-y-1 hover:shadow-xl; }
+            .btn { @apply px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2; }
+            .btn-hover { @apply hover:scale-105 active:scale-95; }
+            .text-gradient { @apply bg-gradient-to-r from-primary to-warning bg-clip-text text-transparent; }
+            .animate-count { animation: count 0.6s ease-in-out; }
+            @keyframes count { 0% { transform: scale(1.15); opacity: 0.8; } 100% { transform: scale(1); opacity: 1; } }
+            .animate-check { animation: check 0.4s ease; }
+            @keyframes check { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-3px); } 75% { transform: translateX(3px); } }
         }
-        ::-webkit-scrollbar {width: 6px;height: 6px;}
-        ::-webkit-scrollbar-track {background: #f1f1f1;border-radius: 3px;}
-        ::-webkit-scrollbar-thumb {background: #cbd5e1;border-radius: 3px;}
-        ::-webkit-scrollbar-thumb:hover {background: #94a3b8;}
-        .dark ::-webkit-scrollbar-track {background: #1e293b;}
-        .dark ::-webkit-scrollbar-thumb {background: #475569;}
-        * {scroll-behavior: smooth;}
-        body {min-height: 100vh;background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%);}
-        .dark body {background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);}
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        .dark ::-webkit-scrollbar-track { background: #1e293b; }
+        .dark ::-webkit-scrollbar-thumb { background: #475669; }
+        * { scroll-behavior: smooth; }
+        body { min-height: 100vh; background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%); }
+        .dark body { background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%); }
     </style>
 </head>
 <body class="text-gray-800 dark:text-gray-200 transition-colors duration-300">
     <nav class="sticky top-0 bg-white/90 dark:bg-dark/90 backdrop-blur-sm shadow-sm z-10 py-3 px-4 flex justify-between items-center">
         <h1 class="text-xl font-bold text-gradient"><i class="fas fa-graduation-cap mr-2"></i>2026考研上岸</h1>
-        <button id="themeBtn" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+        <button id="themeBtn" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
             <i class="fas fa-moon dark:hidden text-gray-600"></i>
             <i class="fas fa-sun hidden dark:inline text-warning"></i>
         </button>
@@ -187,9 +165,10 @@
     </footer>
 
     <script>
-        // 核心配置：2026年底考研
-        const EXAM_DATE = new Date('2026-12-21 00:00:00');
-        // 诗词励志语句
+        // 2026年底考研时间
+        const EXAM_DATE = new Date('2026-12-21');
+        
+        // 完整诗词励志语句
         const QUOTES = [
             "长风破浪会有时，直挂云帆济沧海",
             "路漫漫其修远兮，吾将上下而求索",
@@ -198,10 +177,15 @@
             "不经一番寒彻骨，怎得梅花扑鼻香",
             "博观而约取，厚积而薄发",
             "锲而不舍，金石可镂",
-            "少年自有少年狂，敢乘长风破万浪",
-            "心有猛虎，细嗅蔷薇",
-            "以梦为马，不负韶华"
+            "黄沙百战穿金甲，不破楼兰终不还",
+            "愿君学长松，慎勿作桃李",
+            "穷且益坚，不坠青云之志",
+            "大鹏一日同风起，扶摇直上九万里",
+            "丈夫志四海，万里犹比邻",
+            "青春须早为，岂能长少年",
+            "千磨万击还坚劲，任尔东西南北风"
         ];
+        
         const TIPS = [
             "每天背单词30分钟，坚持到考前",
             "错题本是提分关键，定期复盘",
@@ -210,6 +194,7 @@
             "英语阅读精读，吃透长难句"
         ];
 
+        // 获取DOM元素
         const solarDate = document.getElementById('solarDate');
         const lunarDate = document.getElementById('lunarDate');
         const countDown = document.getElementById('countDown');
@@ -228,29 +213,36 @@
         const wishList = document.getElementById('wishList');
         const resetWishBtn = document.getElementById('resetWishBtn');
 
+        // 主题切换
         themeBtn.addEventListener('click', () => {
             document.documentElement.classList.toggle('dark');
             localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
         });
         if(localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark');
 
+        // 日期和倒计时（仅显示天数）
         function updateDate() {
             const now = new Date();
+            // 公历日期
             const solar = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 周${'日一二三四五六'[now.getDay()]}`;
             solarDate.textContent = solar;
+            // 农历日期
             const lunar = Lunar.fromDate(now);
             lunarDate.textContent = `${lunar.getYearInChinese()}年${lunar.getMonthInChinese()}月${lunar.getDayInChinese()}`;
             
+            // 倒计时 - 只显示天数
             const diff = EXAM_DATE - now;
             const day = Math.ceil(diff / 86400000);
             countDown.innerHTML = `${day} 天`;
             
+            // 动画效果
             countDown.classList.add('animate-count');
             setTimeout(() => countDown.classList.remove('animate-count'), 600);
         }
         setInterval(updateDate, 1000);
         updateDate();
 
+        // 设置每日诗词和小贴士
         function setDailyContent() {
             const day = new Date().getDate();
             dailyQuote.textContent = QUOTES[day % QUOTES.length];
@@ -258,6 +250,7 @@
         }
         setDailyContent();
 
+        // 打卡功能初始化
         function initCheckIn() {
             if(!localStorage.getItem('checkInData')) {
                 localStorage.setItem('checkInData', JSON.stringify({total:0,continue:0,last:'',imgs:[]}));
@@ -270,6 +263,7 @@
         function renderCheckInWall(imgs) {
             checkInWall.innerHTML = imgs.map(img => `<img src="${img}" class="w-full h-20 object-cover rounded-lg shadow-sm">`).join('');
         }
+        // 图片预览
         uploadImg.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if(file) {
@@ -278,6 +272,7 @@
                 reader.readAsDataURL(file);
             }
         });
+        // 打卡提交
         checkInBtn.addEventListener('click', () => {
             if(!previewImg.src) return alert('请先上传打卡照片！');
             const today = new Date().toDateString();
@@ -297,6 +292,7 @@
             uploadImg.value='';
         });
 
+        // 愿望清单功能
         function initWish() {
             if(!localStorage.getItem('wishList')) localStorage.setItem('wishList',JSON.stringify([]));
             renderWish();
@@ -327,6 +323,7 @@
             }
         });
 
+        // 页面加载初始化
         window.onload=()=>{initCheckIn();initWish();};
     </script>
 </body>
