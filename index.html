@@ -46,17 +46,19 @@
         * { scroll-behavior: smooth; }
         body { 
             min-height: 100vh;
-            background: url('https://picsum.photos/id/1035/1920/1080') no-repeat center center fixed;
+            background: url('file:///Users/wangqixiang/Desktop/') no-repeat center center fixed;
             background-size: cover;
+            transition-colors duration-300;
         }
         .dark body {
-            background: url('https://picsum.photos/id/1035/1920/1080') no-repeat center center fixed;
+            background: url('file:///Users/wangqixiang/Desktop/') no-repeat center center fixed;
             background-size: cover;
             filter: brightness(0.8);
         }
     </style>
 </head>
-<body class="text-gray-800 dark:text-gray-200 transition-colors duration-300">
+<body class="text-gray-800 dark:text-gray-200">
+    <!-- 导航栏 -->
     <nav class="sticky top-0 bg-white/90 dark:bg-dark/90 backdrop-blur-sm shadow-sm z-10 py-3 px-4 flex justify-between items-center">
         <h1 class="text-xl font-bold text-gradient"><i class="fas fa-graduation-cap mr-2"></i>2026考研上岸</h1>
         <button id="themeBtn" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
@@ -65,8 +67,11 @@
         </button>
     </nav>
 
+    <!-- 主内容区 -->
     <div class="max-w-7xl mx-auto p-4 grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
+        <!-- 左侧 -->
         <div class="md:col-span-2 space-y-6">
+            <!-- 日期+倒计时 -->
             <div class="card card-hover">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="text-center md:text-left">
@@ -75,20 +80,22 @@
                         <p id="lunarDate" class="text-gray-500 dark:text-gray-400 mt-1"></p>
                     </div>
                     <div class="text-center">
-  <h2 class="text-lg font-semibold mb-2 text-gray-700 dark:text-gray-300">2026考研倒计时</h2>
-  <div id="countDown" class="text-3xl font-bold text-gradient animate-count"></div>
-  <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">初试时间：2026年12月20日</p>
-</div>
+                        <h2 class="text-lg font-semibold mb-2 text-gray-700 dark:text-gray-300">2026考研倒计时</h2>
+                        <div id="countDown" class="text-3xl font-bold text-gradient animate-count"></div>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">初试时间：2026年12月20日</p>
+                    </div>
                 </div>
             </div>
 
+            <!-- 每日诗词 -->
             <div class="card card-hover">
-  <h2 class="text-lg font-semibold mb-3 flex items-center text-gray-700 dark:text-gray-300">
-    <i class="fas fa-quote-left text-primary mr-2"></i>每日励志
-  </h2>
-  <p id="dailyQuote" class="text-xl text-center py-6 italic text-gradient font-medium"></p>
-</div>
+                <h2 class="text-lg font-semibold mb-3 flex items-center text-gray-700 dark:text-gray-300">
+                    <i class="fas fa-quote-left text-primary mr-2"></i>每日励志
+                </h2>
+                <p id="dailyQuote" class="text-xl text-center py-6 italic text-gradient font-medium"></p>
+            </div>
 
+            <!-- 打卡功能 -->
             <div class="card card-hover">
                 <h2 class="text-lg font-semibold mb-4 flex items-center text-gray-700 dark:text-gray-300">
                     <i class="fas fa-check-circle text-success mr-2"></i>每日学习打卡
@@ -122,7 +129,9 @@
             </div>
         </div>
 
+        <!-- 右侧 -->
         <div class="space-y-6">
+            <!-- 愿望清单 -->
             <div class="card card-hover">
                 <h2 class="text-lg font-semibold mb-4 flex items-center text-gray-700 dark:text-gray-300">
                     <i class="fas fa-star text-warning mr-2"></i>上岸愿望清单
@@ -138,6 +147,7 @@
                 <button id="resetWishBtn" class="mt-4 text-sm text-gray-500 hover:text-red-500 transition-colors">重置清单</button>
             </div>
 
+            <!-- 考研节点 -->
             <div class="card card-hover">
                 <h2 class="text-lg font-semibold mb-4 flex items-center text-gray-700 dark:text-gray-300">
                     <i class="fas fa-calendar-alt text-primary mr-2"></i>考研关键节点
@@ -166,66 +176,33 @@
         </div>
     </div>
 
-    <footer class="text-center py-6 text-white dark:text-white text-sm mt-8">
-    <p>2026考研上岸助力站 | 数据存储在本地，刷新不丢失</p>
-    <p class="mt-1">星光不负赶路人，时光不负考研人</p>
-</footer>
+    <!-- 底部（白色文字） -->
+    <footer class="text-center py-6 text-white text-sm mt-8">
+        <p>2026考研上岸助力站 | 数据存储在本地，刷新不丢失</p>
+        <p class="mt-1">星光不负赶路人，时光不负考研人</p>
+    </footer>
 
-    // 考研时间
-const EXAM_DATE = new Date('2026-12-20');
+    <script>
+        // 核心配置
+        const EXAM_DATE = new Date('2026-12-20');
+        const QUOTES = [
+            "长风破浪会有时，直挂云帆济沧海",
+            "路漫漫其修远兮，吾将上下而求索",
+            "千淘万漉虽辛苦，吹尽狂沙始到金",
+            "宝剑锋从磨砺出，梅花香自苦寒来",
+            "不经一番寒彻骨，怎得梅花扑鼻香",
+            "博观而约取，厚积而薄发",
+            "锲而不舍，金石可镂",
+            "黄沙百战穿金甲，不破楼兰终不还",
+            "穷且益坚，不坠青云之志",
+            "大鹏一日同风起，扶摇直上九万里"
+        ];
 
-// 励志诗词
-const QUOTES = [
-  "长风破浪会有时，直挂云帆济沧海",
-  "路漫漫其修远兮，吾将上下而求索",
-  "千淘万漉虽辛苦，吹尽狂沙始到金",
-  "宝剑锋从磨砺出，梅花香自苦寒来",
-  "不经一番寒彻骨，怎得梅花扑鼻香",
-  "博观而约取，厚积而薄发",
-  "锲而不舍，金石可镂",
-  "黄沙百战穿金甲，不破楼兰终不还",
-  "穷且益坚，不坠青云之志",
-  "大鹏一日同风起，扶摇直上九万里"
-];
-
-// 更新日期和倒计时（只显示天数）
-function updateDate() {
-  const now = new Date();
-  // 公历日期
-  const solar = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 周${'日一二三四五六'[now.getDay()]}`;
-  document.getElementById('solarDate').textContent = solar;
-  // 农历日期（如果有）
-  if (typeof Lunar !== 'undefined') {
-    const lunar = Lunar.fromDate(now);
-    document.getElementById('lunarDate').textContent = `${lunar.getYearInChinese()}年${lunar.getMonthInChinese()}月${lunar.getDayInChinese()}`;
-  }
-  // 倒计时 - 仅显示天数
-  const diff = EXAM_DATE - now;
-  const day = Math.ceil(diff / 86400000);
-  const countDownEl = document.getElementById('countDown');
-  countDownEl.innerHTML = `${day} 天`;
-  // 跳动动画
-  countDownEl.classList.add('animate-count');
-  setTimeout(() => countDownEl.classList.remove('animate-count'), 600);
-}
-
-// 设置每日诗词
-function setDailyQuote() {
-  const day = new Date().getDate();
-  document.getElementById('dailyQuote').textContent = QUOTES[day % QUOTES.length];
-}
-
-// 初始化
-setInterval(updateDate, 1000);
-updateDate();
-setDailyQuote();
-
-        // 获取DOM元素
+        // 元素获取
         const solarDate = document.getElementById('solarDate');
         const lunarDate = document.getElementById('lunarDate');
         const countDown = document.getElementById('countDown');
         const dailyQuote = document.getElementById('dailyQuote');
-        const dailyTip = document.getElementById('dailyTip');
         const themeBtn = document.getElementById('themeBtn');
         const uploadImg = document.getElementById('uploadImg');
         const previewBox = document.getElementById('previewBox');
@@ -246,7 +223,7 @@ setDailyQuote();
         });
         if(localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark');
 
-        // 日期和倒计时（仅显示天数）
+        // 日期+倒计时（仅显示「距离考研还剩 X 天」）
         function updateDate() {
             const now = new Date();
             // 公历日期
@@ -255,28 +232,25 @@ setDailyQuote();
             // 农历日期
             const lunar = Lunar.fromDate(now);
             lunarDate.textContent = `${lunar.getYearInChinese()}年${lunar.getMonthInChinese()}月${lunar.getDayInChinese()}`;
-            
-            // 倒计时 - 只显示天数
+            // 倒计时核心修改：显示完整文案
             const diff = EXAM_DATE - now;
             const day = Math.ceil(diff / 86400000);
-            countDown.innerHTML = `${day} 天`;
-            
-            // 动画效果
+            countDown.innerHTML = `距离考研还剩 ${day} 天`;
+            // 跳动动画
             countDown.classList.add('animate-count');
             setTimeout(() => countDown.classList.remove('animate-count'), 600);
         }
         setInterval(updateDate, 1000);
         updateDate();
 
-        // 设置每日诗词和小贴士
-        function setDailyContent() {
+        // 每日诗词
+        function setDailyQuote() {
             const day = new Date().getDate();
             dailyQuote.textContent = QUOTES[day % QUOTES.length];
-            dailyTip.textContent = `备考小贴士：${TIPS[day % TIPS.length]}`;
         }
-        setDailyContent();
+        setDailyQuote();
 
-        // 打卡功能初始化
+        // 打卡功能
         function initCheckIn() {
             if(!localStorage.getItem('checkInData')) {
                 localStorage.setItem('checkInData', JSON.stringify({total:0,continue:0,last:'',imgs:[]}));
@@ -289,7 +263,6 @@ setDailyQuote();
         function renderCheckInWall(imgs) {
             checkInWall.innerHTML = imgs.map(img => `<img src="${img}" class="w-full h-20 object-cover rounded-lg shadow-sm">`).join('');
         }
-        // 图片预览
         uploadImg.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if(file) {
@@ -298,7 +271,6 @@ setDailyQuote();
                 reader.readAsDataURL(file);
             }
         });
-        // 打卡提交
         checkInBtn.addEventListener('click', () => {
             if(!previewImg.src) return alert('请先上传打卡照片！');
             const today = new Date().toDateString();
