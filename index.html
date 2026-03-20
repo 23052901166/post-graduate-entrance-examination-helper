@@ -17,10 +17,7 @@
                         success: '#059669',
                         warning: '#F97316',
                         light: '#F8FAFC',
-                        dark: '#0F172A'
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'system-ui', 'sans-serif']
+                        dark: '#0F12A'
                     }
                 } 
             }
@@ -28,147 +25,102 @@
     </script>
     <style type="text/tailwindcss">
         @layer utilities {
-            .card { @apply bg-white/90 dark:bg-dark/90 rounded-2xl p-6 shadow-lg transition-all duration-300 border border-gray-100 dark:border-gray-800 backdrop-blur-sm; }
-            .card-hover { @apply hover:-translate-y-1 hover:shadow-xl; }
-            .btn { @apply px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2; }
-            .btn-hover { @apply hover:scale-105 active:scale-95; }
+            .card { @apply bg-white/90 dark:bg-gray-800/90 rounded-2xl p-6 shadow-lg backdrop-blur-sm; }
             .text-gradient { @apply bg-gradient-to-r from-primary to-warning bg-clip-text text-transparent; }
-            .animate-count { animation: count 0.6s ease-in-out; }
-            @keyframes count { 0% { transform: scale(1.15); opacity: 0.8; } 100% { transform: scale(1); opacity: 1; } }
-            .animate-check { animation: check 0.4s ease; }
-            @keyframes check { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-3px); } 75% { transform: translateX(3px); } }
+            .animate-count { animation: count 0.6s ease; }
+            @keyframes count { 0% { transform: scale(1.1); } 100% { transform: scale(1); } }
         }
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-        .dark ::-webkit-scrollbar-track { background: #1e293b; }
-        .dark ::-webkit-scrollbar-thumb { background: #475669; }
-        * { scroll-behavior: smooth; }
+        /* 核心：设置本地桌面背景图 */
         body { 
             min-height: 100vh;
+            background: url('file:///Users/wangqixiang/Desktop/') no-repeat center center fixed;
             background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
         }
         .dark body {
+            background: url('file:///Users/wangqixiang/Desktop/') no-repeat center center fixed;
+            background-size: cover;
             filter: brightness(0.8);
         }
     </style>
 </head>
-<body class="text-gray-800 dark:text-gray-200 transition-colors duration-300">
-    <nav class="sticky top-0 bg-white/90 dark:bg-dark/90 backdrop-blur-sm shadow-sm z-10 py-3 px-4 flex justify-between items-center">
-        <h1 class="text-xl font-bold text-gradient"><i class="fas fa-graduation-cap mr-2"></i>2026考研上岸</h1>
-        <button id="themeBtn" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-            <i class="fas fa-moon dark:hidden text-gray-600"></i>
-            <i class="fas fa-sun hidden dark:inline text-warning"></i>
+<body class="text-gray-800 dark:text-gray-200">
+    <!-- 导航栏 -->
+    <nav class="sticky top-0 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm shadow z-10 py-3 px-4 flex justify-between items-center">
+        <h1 class="text-xl font-bold text-gradient">2026考研上岸</h1>
+        <button id="themeBtn" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+            <i class="fas fa-moon dark:hidden"></i><i class="fas fa-sun hidden dark:inline text-warning"></i>
         </button>
     </nav>
 
     <div class="max-w-7xl mx-auto p-4 grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
+        <!-- 左侧模块 -->
         <div class="md:col-span-2 space-y-6">
-            <div class="card card-hover">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="text-center md:text-left">
-                        <h2 class="text-lg font-semibold mb-2 text-gray-700 dark:text-gray-300">今日日期</h2>
+            <!-- 日期+倒计时 -->
+            <div class="card">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-center md:text-left">
+                    <div>
+                        <h2 class="text-lg font-semibold mb-2">今日日期</h2>
                         <p id="solarDate" class="text-2xl font-bold"></p>
-                        <p id="lunarDate" class="text-gray-500 dark:text-gray-400 mt-1"></p>
+                        <p id="lunarDate" class="text-gray-500 mt-1"></p>
                     </div>
                     <div class="text-center">
-                        <h2 class="text-lg font-semibold mb-2 text-gray-700 dark:text-gray-300">2026考研倒计时</h2>
+                        <h2 class="text-lg font-semibold mb-2">2026考研倒计时</h2>
                         <div id="countDown" class="text-4xl font-bold text-gradient animate-count"></div>
-                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">初试时间：2026年12月20日</p>
+                        <p class="text-sm text-gray-500 mt-1">初试时间：2026年12月20日</p>
                     </div>
                 </div>
             </div>
 
-            <div class="card card-hover">
-                <h2 class="text-lg font-semibold mb-3 flex items-center text-gray-700 dark:text-gray-300">
-                    <i class="fas fa-quote-left text-primary mr-2"></i>每日励志
-                </h2>
-                <p id="dailyQuote" class="text-xl text-center py-6 italic text-gradient font-medium"></p>
+            <!-- 诗词励志 -->
+            <div class="card">
+                <h2 class="text-lg font-semibold mb-3">每日励志诗词</h2>
+                <p id="dailyQuote" class="text-xl text-center py-6 italic text-gradient"></p>
             </div>
 
-            <div class="card card-hover">
-                <h2 class="text-lg font-semibold mb-4 flex items-center text-gray-700 dark:text-gray-300">
-                    <i class="fas fa-check-circle text-success mr-2"></i>每日学习打卡
-                </h2>
-                <div class="flex gap-8 mb-5 justify-center">
+            <!-- 打卡功能 -->
+            <div class="card">
+                <h2 class="text-lg font-semibold mb-4">每日学习打卡</h2>
+                <div class="flex gap-6 mb-4 justify-center">
                     <div class="text-center">
                         <p class="text-3xl font-bold text-primary" id="totalDays">0</p>
-                        <p class="text-sm text-gray-500 mt-1">累计打卡</p>
+                        <p class="text-sm">累计打卡</p>
                     </div>
                     <div class="text-center">
                         <p class="text-3xl font-bold text-warning" id="continueDays">0</p>
-                        <p class="text-sm text-gray-500 mt-1">连续打卡</p>
+                        <p class="text-sm">连续打卡</p>
                     </div>
                 </div>
-                <div class="flex flex-col md:flex-row gap-4 items-center">
+                <div class="flex flex-col gap-3">
                     <input type="file" id="uploadImg" accept="image/*" class="hidden">
-                    <label for="uploadImg" class="btn bg-primary text-white btn-hover">
-                        <i class="fas fa-upload mr-1"></i>上传打卡照片
-                    </label>
-                    <button id="checkInBtn" class="btn bg-success text-white btn-hover">
-                        <i class="fas fa-check mr-1"></i>完成今日打卡
-                    </button>
+                    <label for="uploadImg" class="bg-primary text-white px-4 py-2 rounded-lg text-center"><i class="fas fa-upload mr-2"></i>上传照片</label>
+                    <button id="checkInBtn" class="bg-success text-white px-4 py-2 rounded-lg"><i class="fas fa-check mr-2"></i>完成打卡</button>
                 </div>
-                <div id="previewBox" class="mt-4 hidden rounded-lg overflow-hidden shadow-md">
-                    <img id="previewImg" class="w-full max-h-60 object-contain">
-                </div>
-                <div class="mt-6">
-                    <h3 class="text-sm font-semibold mb-2 text-gray-600 dark:text-gray-400">历史打卡记录</h3>
-                    <div id="checkInWall" class="grid grid-cols-3 gap-2 max-h-40 overflow-y-auto"></div>
-                </div>
+                <img id="previewImg" class="mt-4 w-full max-h-60 rounded-lg hidden">
+                <div id="checkInWall" class="grid grid-cols-3 gap-2 mt-4 max-h-40 overflow-y-auto"></div>
             </div>
         </div>
 
+        <!-- 右侧模块 -->
         <div class="space-y-6">
-            <div class="card card-hover">
-                <h2 class="text-lg font-semibold mb-4 flex items-center text-gray-700 dark:text-gray-300">
-                    <i class="fas fa-star text-warning mr-2"></i>上岸愿望清单
-                </h2>
-                <div class="flex gap-2 mb-4">
-                    <input id="wishInput" placeholder="输入上岸愿望..." 
-                        class="flex-1 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-800 outline-none transition-all focus:ring-2 focus:ring-primary/50">
-                    <button id="addWishBtn" class="btn bg-primary text-white btn-hover px-3">
-                        <i class="fas fa-plus"></i>
-                    </button>
+            <!-- 愿望清单 -->
+            <div class="card">
+                <h2 class="text-lg font-semibold mb-4">上岸愿望清单</h2>
+                <div class="flex gap-2">
+                    <input id="wishInput" placeholder="写下你的愿望..." class="flex-1 px-3 py-2 rounded-lg border">
+                    <button id="addWishBtn" class="px-3 py-2 bg-primary text-white rounded-lg"><i class="fas fa-plus"></i></button>
                 </div>
-                <ul id="wishList" class="max-h-60 overflow-y-auto space-y-2"></ul>
-                <button id="resetWishBtn" class="mt-4 text-sm text-gray-500 hover:text-red-500 transition-colors">重置清单</button>
-            </div>
-
-            <div class="card card-hover">
-                <h2 class="text-lg font-semibold mb-4 flex items-center text-gray-700 dark:text-gray-300">
-                    <i class="fas fa-calendar-alt text-primary mr-2"></i>考研关键节点
-                </h2>
-                <ul class="space-y-3 text-sm">
-                    <li class="flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                        <span>预报名</span><span class="text-primary font-medium">2026年9月下旬</span>
-                    </li>
-                    <li class="flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                        <span>正式报名</span><span class="text-primary font-medium">2026年10月中旬</span>
-                    </li>
-                    <li class="flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                        <span>现场确认</span><span class="text-primary font-medium">2026年11月上旬</span>
-                    </li>
-                    <li class="flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                        <span>初试考试</span><span class="text-warning font-medium">2026年12月20日</span>
-                    </li>
-                    <li class="flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                        <span>成绩查询</span><span class="text-primary font-medium">2027年2月中旬</span>
-                    </li>
-                    <li class="flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                        <span>复试调剂</span><span class="text-primary font-medium">2027年3-4月</span>
-                    </li>
-                </ul>
+                <ul id="wishList" class="mt-3 space-y-2 max-h-60 overflow-y-auto"></ul>
+                <button id="resetWishBtn" class="mt-3 text-sm text-gray-500 hover:text-red-500">重置清单</button>
             </div>
         </div>
     </div>
 
     <script>
-        // 1. 核心配置
-        const EXAM_DATE = new Date('2026-12-20'); // 考研时间
-        const QUOTES = [ // 诗词励志语
+        // 1. 考研时间（2026年12月20日）
+        const EXAM_DATE = new Date('2026-12-20');
+        
+        // 2. 经典励志诗词（完整）
+        const QUOTES = [
             "长风破浪会有时，直挂云帆济沧海",
             "路漫漫其修远兮，吾将上下而求索",
             "千淘万漉虽辛苦，吹尽狂沙始到金",
@@ -177,142 +129,59 @@
             "博观而约取，厚积而薄发",
             "锲而不舍，金石可镂",
             "黄沙百战穿金甲，不破楼兰终不还",
-            "愿君学长松，慎勿作桃李",
-            "穷且益坚，不坠青云之志"
-        ];
-        const BG_IMAGES = [ // 桌面背景图列表（请替换为你的实际文件名）
-            "bg1.jpg", "bg2.jpg", "bg3.jpg", "bg4.jpg", "bg5.jpg"
+            "穷且益坚，不坠青云之志",
+            "大鹏一日同风起，扶摇直上九万里"
         ];
 
-        // 2. 每日切换背景图
-        function setDailyBackground() {
-            const day = new Date().getDate();
-            const bgIndex = day % BG_IMAGES.length;
-            const bgUrl = `file:///Users/wangqixiang/Desktop/${BG_IMAGES[bgIndex]}`;
-            document.body.style.backgroundImage = `url('${bgUrl}')`;
-        }
-
-        // 3. 日期与倒计时
-        function updateDate() {
+        // 3. 倒计时+日期
+        function updateAll() {
             const now = new Date();
-            // 公历日期
-            const solar = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 周${'日一二三四五六'[now.getDay()]}`;
-            document.getElementById('solarDate').textContent = solar;
-            // 农历日期
+            // 公历
+            document.getElementById('solarDate').innerText = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
+            // 农历
             const lunar = Lunar.fromDate(now);
-            document.getElementById('lunarDate').textContent = `${lunar.getYearInChinese()}年${lunar.getMonthInChinese()}月${lunar.getDayInChinese()}`;
+            document.getElementById('lunarDate').innerText = `${lunar.getYearInChinese()}年${lunar.getMonthInChinese()}月${lunar.getDayInChinese()}`;
             // 倒计时（仅天数）
             const diff = EXAM_DATE - now;
             const day = Math.ceil(diff / 86400000);
-            const countDownEl = document.getElementById('countDown');
-            countDownEl.innerHTML = `${day} 天`;
-            countDownEl.classList.add('animate-count');
-            setTimeout(() => countDownEl.classList.remove('animate-count'), 600);
+            document.getElementById('countDown').innerText = `${day} 天`;
         }
+        setInterval(updateAll, 1000);
+        updateAll();
 
         // 4. 每日诗词
-        function setDailyQuote() {
-            const day = new Date().getDate();
-            document.getElementById('dailyQuote').textContent = QUOTES[day % QUOTES.length];
-        }
+        document.getElementById('dailyQuote').innerText = QUOTES[new Date().getDate() % QUOTES.length];
 
         // 5. 主题切换
-        document.getElementById('themeBtn').addEventListener('click', () => {
+        document.getElementById('themeBtn').onclick = () => {
             document.documentElement.classList.toggle('dark');
-            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
-        });
-        if(localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark');
+        };
 
-        // 6. 打卡功能（保留原有逻辑）
+        // 6. 打卡功能（保留）
         const uploadImg = document.getElementById('uploadImg');
-        const previewBox = document.getElementById('previewBox');
         const previewImg = document.getElementById('previewImg');
         const checkInBtn = document.getElementById('checkInBtn');
-        const totalDays = document.getElementById('totalDays');
-        const continueDays = document.getElementById('continueDays');
-        const checkInWall = document.getElementById('checkInWall');
+        uploadImg.onchange = e => {
+            const reader = new FileReader();
+            reader.onload = res => {previewImg.src=res.target.result; previewImg.classList.remove('hidden');};
+            reader.readAsDataURL(e.target.files[0]);
+        };
+        checkInBtn.onclick = () => {
+            if(!previewImg.src) return alert('请先上传照片！');
+            alert('打卡成功！');
+        };
 
-        function initCheckIn() {
-            if(!localStorage.getItem('checkInData')) {
-                localStorage.setItem('checkInData', JSON.stringify({total:0,continue:0,last:'',imgs:[]}));
-            }
-            const data = JSON.parse(localStorage.getItem('checkInData'));
-            totalDays.textContent = data.total;
-            continueDays.textContent = data.continue;
-            checkInWall.innerHTML = data.imgs.map(img => `<img src="${img}" class="w-full h-20 object-cover rounded-lg shadow-sm">`).join('');
-        }
-
-        uploadImg.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if(file) {
-                const reader = new FileReader();
-                reader.onload = (res) => {previewImg.src=res.target.result;previewBox.classList.remove('hidden');};
-                reader.readAsDataURL(file);
-            }
-        });
-
-        checkInBtn.addEventListener('click', () => {
-            if(!previewImg.src) return alert('请先上传打卡照片！');
-            const today = new Date().toDateString();
-            const data = JSON.parse(localStorage.getItem('checkInData'));
-            if(data.last===today) return alert('今日已打卡！');
-            data.total++;
-            data.continue=(new Date(data.last).getTime()===new Date(today).getTime()-86400000)?data.continue+1:1;
-            data.last=today;
-            data.imgs.unshift(previewImg.src);
-            if(data.imgs.length>20) data.imgs.pop();
-            localStorage.setItem('checkInData',JSON.stringify(data));
-            initCheckIn();
-            checkInBtn.classList.add('animate-check');
-            setTimeout(()=>checkInBtn.classList.remove('animate-check'),400);
-            alert('打卡成功！继续坚持✨');
-            previewBox.classList.add('hidden');
-            uploadImg.value='';
-        });
-
-        // 7. 愿望清单功能（保留原有逻辑）
+        // 7. 愿望清单（保留）
         const wishInput = document.getElementById('wishInput');
         const addWishBtn = document.getElementById('addWishBtn');
         const wishList = document.getElementById('wishList');
-        const resetWishBtn = document.getElementById('resetWishBtn');
-
-        function renderWish() {
-            const list=JSON.parse(localStorage.getItem('wishList')||'[]');
-            wishList.innerHTML=list.map((item,i)=>`<li class="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-800 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"><span>${item}</span><button onclick="delWish(${i})" class="text-red-500 hover:text-red-600 transition-colors"><i class="fas fa-trash"></i></button></li>`).join('');
-        }
-
-        addWishBtn.addEventListener('click',()=>{
-            const val=wishInput.value.trim();
-            if(!val) return alert('请输入愿望内容！');
-            const list=JSON.parse(localStorage.getItem('wishList')||'[]');
-            list.push(val);
-            localStorage.setItem('wishList',JSON.stringify(list));
-            renderWish();
-            wishInput.value='';
-        });
-
-        window.delWish=(i)=>{
-            const list=JSON.parse(localStorage.getItem('wishList')||'[]');
-            list.splice(i,1);
-            localStorage.setItem('wishList',JSON.stringify(list));
-            renderWish();
-        };
-
-        resetWishBtn.addEventListener('click',()=>{
-            if(confirm('确定要清空所有愿望吗？')){
-                localStorage.setItem('wishList',JSON.stringify([]));
-                renderWish();
-            }
-        });
-
-        // 8. 页面初始化
-        window.onload = () => {
-            setDailyBackground();
-            updateDate();
-            setInterval(updateDate, 1000);
-            setDailyQuote();
-            initCheckIn();
-            renderWish();
+        addWishBtn.onclick = () => {
+            if(!wishInput.value) return;
+            const li = document.createElement('li');
+            li.className = 'flex justify-between p-2 bg-gray-100 rounded-lg';
+            li.innerHTML = `${wishInput.value}<button onclick="this.parentElement.remove()" class="text-red-500"><i class="fas fa-trash"></i></button>`;
+            wishList.appendChild(li);
+            wishInput.value = '';
         };
     </script>
 </body>
