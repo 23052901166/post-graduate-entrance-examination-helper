@@ -46,12 +46,11 @@
         * { scroll-behavior: smooth; }
         body { 
             min-height: 100vh;
-            background: url('https://picsum.photos/id/1035/1920/1080') no-repeat center center fixed;
             background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
         }
         .dark body {
-            background: url('https://picsum.photos/id/1035/1920/1080') no-repeat center center fixed;
-            background-size: cover;
             filter: brightness(0.8);
         }
     </style>
@@ -87,7 +86,6 @@
                     <i class="fas fa-quote-left text-primary mr-2"></i>每日励志
                 </h2>
                 <p id="dailyQuote" class="text-xl text-center py-6 italic text-gradient font-medium"></p>
-                <p id="dailyTip" class="text-gray-500 dark:text-gray-400 text-center text-sm mt-2 bg-gray-50 dark:bg-gray-800 py-2 rounded-lg"></p>
             </div>
 
             <div class="card card-hover">
@@ -167,17 +165,10 @@
         </div>
     </div>
 
-    <footer class="text-center py-6 text-gray-500 dark:text-gray-400 text-sm mt-8">
-        <p>2026考研上岸助力站 | 数据存储在本地，刷新不丢失</p>
-        <p class="mt-1">星光不负赶路人，时光不负考研人</p>
-    </footer>
-
     <script>
-        // 2026年底考研时间（12月20日）
-        const EXAM_DATE = new Date('2026-12-20');
-        
-        // 经典诗词励志语
-        const QUOTES = [
+        // 1. 核心配置
+        const EXAM_DATE = new Date('2026-12-20'); // 考研时间
+        const QUOTES = [ // 诗词励志语
             "长风破浪会有时，直挂云帆济沧海",
             "路漫漫其修远兮，吾将上下而求索",
             "千淘万漉虽辛苦，吹尽狂沙始到金",
@@ -187,28 +178,52 @@
             "锲而不舍，金石可镂",
             "黄沙百战穿金甲，不破楼兰终不还",
             "愿君学长松，慎勿作桃李",
-            "穷且益坚，不坠青云之志",
-            "大鹏一日同风起，扶摇直上九万里",
-            "丈夫志四海，万里犹比邻",
-            "青春须早为，岂能长少年",
-            "千磨万击还坚劲，任尔东西南北风"
+            "穷且益坚，不坠青云之志"
         ];
-        
-        const TIPS = [
-            "每天背单词30分钟，坚持到考前",
-            "错题本是提分关键，定期复盘",
-            "保证睡眠，效率比时长更重要",
-            "政治后期押题卷必刷，选择题多练",
-            "英语阅读精读，吃透长难句"
+        const BG_IMAGES = [ // 桌面背景图列表（请替换为你的实际文件名）
+            "bg1.jpg", "bg2.jpg", "bg3.jpg", "bg4.jpg", "bg5.jpg"
         ];
 
-        // 获取DOM元素
-        const solarDate = document.getElementById('solarDate');
-        const lunarDate = document.getElementById('lunarDate');
-        const countDown = document.getElementById('countDown');
-        const dailyQuote = document.getElementById('dailyQuote');
-        const dailyTip = document.getElementById('dailyTip');
-        const themeBtn = document.getElementById('themeBtn');
+        // 2. 每日切换背景图
+        function setDailyBackground() {
+            const day = new Date().getDate();
+            const bgIndex = day % BG_IMAGES.length;
+            const bgUrl = `file:///Users/wangqixiang/Desktop/${BG_IMAGES[bgIndex]}`;
+            document.body.style.backgroundImage = `url('${bgUrl}')`;
+        }
+
+        // 3. 日期与倒计时
+        function updateDate() {
+            const now = new Date();
+            // 公历日期
+            const solar = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 周${'日一二三四五六'[now.getDay()]}`;
+            document.getElementById('solarDate').textContent = solar;
+            // 农历日期
+            const lunar = Lunar.fromDate(now);
+            document.getElementById('lunarDate').textContent = `${lunar.getYearInChinese()}年${lunar.getMonthInChinese()}月${lunar.getDayInChinese()}`;
+            // 倒计时（仅天数）
+            const diff = EXAM_DATE - now;
+            const day = Math.ceil(diff / 86400000);
+            const countDownEl = document.getElementById('countDown');
+            countDownEl.innerHTML = `${day} 天`;
+            countDownEl.classList.add('animate-count');
+            setTimeout(() => countDownEl.classList.remove('animate-count'), 600);
+        }
+
+        // 4. 每日诗词
+        function setDailyQuote() {
+            const day = new Date().getDate();
+            document.getElementById('dailyQuote').textContent = QUOTES[day % QUOTES.length];
+        }
+
+        // 5. 主题切换
+        document.getElementById('themeBtn').addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+        });
+        if(localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark');
+
+        // 6. 打卡功能（保留原有逻辑）
         const uploadImg = document.getElementById('uploadImg');
         const previewBox = document.getElementById('previewBox');
         const previewImg = document.getElementById('previewImg');
@@ -216,49 +231,7 @@
         const totalDays = document.getElementById('totalDays');
         const continueDays = document.getElementById('continueDays');
         const checkInWall = document.getElementById('checkInWall');
-        const wishInput = document.getElementById('wishInput');
-        const addWishBtn = document.getElementById('addWishBtn');
-        const wishList = document.getElementById('wishList');
-        const resetWishBtn = document.getElementById('resetWishBtn');
 
-        // 主题切换
-        themeBtn.addEventListener('click', () => {
-            document.documentElement.classList.toggle('dark');
-            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
-        });
-        if(localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark');
-
-        // 日期和倒计时（仅显示天数）
-        function updateDate() {
-            const now = new Date();
-            // 公历日期
-            const solar = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 周${'日一二三四五六'[now.getDay()]}`;
-            solarDate.textContent = solar;
-            // 农历日期
-            const lunar = Lunar.fromDate(now);
-            lunarDate.textContent = `${lunar.getYearInChinese()}年${lunar.getMonthInChinese()}月${lunar.getDayInChinese()}`;
-            
-            // 倒计时 - 只显示天数
-            const diff = EXAM_DATE - now;
-            const day = Math.ceil(diff / 86400000);
-            countDown.innerHTML = `${day} 天`;
-            
-            // 动画效果
-            countDown.classList.add('animate-count');
-            setTimeout(() => countDown.classList.remove('animate-count'), 600);
-        }
-        setInterval(updateDate, 1000);
-        updateDate();
-
-        // 设置每日诗词和小贴士
-        function setDailyContent() {
-            const day = new Date().getDate();
-            dailyQuote.textContent = QUOTES[day % QUOTES.length];
-            dailyTip.textContent = `备考小贴士：${TIPS[day % TIPS.length]}`;
-        }
-        setDailyContent();
-
-        // 打卡功能初始化
         function initCheckIn() {
             if(!localStorage.getItem('checkInData')) {
                 localStorage.setItem('checkInData', JSON.stringify({total:0,continue:0,last:'',imgs:[]}));
@@ -266,12 +239,9 @@
             const data = JSON.parse(localStorage.getItem('checkInData'));
             totalDays.textContent = data.total;
             continueDays.textContent = data.continue;
-            renderCheckInWall(data.imgs);
+            checkInWall.innerHTML = data.imgs.map(img => `<img src="${img}" class="w-full h-20 object-cover rounded-lg shadow-sm">`).join('');
         }
-        function renderCheckInWall(imgs) {
-            checkInWall.innerHTML = imgs.map(img => `<img src="${img}" class="w-full h-20 object-cover rounded-lg shadow-sm">`).join('');
-        }
-        // 图片预览
+
         uploadImg.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if(file) {
@@ -280,7 +250,7 @@
                 reader.readAsDataURL(file);
             }
         });
-        // 打卡提交
+
         checkInBtn.addEventListener('click', () => {
             if(!previewImg.src) return alert('请先上传打卡照片！');
             const today = new Date().toDateString();
@@ -300,30 +270,34 @@
             uploadImg.value='';
         });
 
-        // 愿望清单功能
-        function initWish() {
-            if(!localStorage.getItem('wishList')) localStorage.setItem('wishList',JSON.stringify([]));
-            renderWish();
-        }
+        // 7. 愿望清单功能（保留原有逻辑）
+        const wishInput = document.getElementById('wishInput');
+        const addWishBtn = document.getElementById('addWishBtn');
+        const wishList = document.getElementById('wishList');
+        const resetWishBtn = document.getElementById('resetWishBtn');
+
         function renderWish() {
-            const list=JSON.parse(localStorage.getItem('wishList'));
+            const list=JSON.parse(localStorage.getItem('wishList')||'[]');
             wishList.innerHTML=list.map((item,i)=>`<li class="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-800 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"><span>${item}</span><button onclick="delWish(${i})" class="text-red-500 hover:text-red-600 transition-colors"><i class="fas fa-trash"></i></button></li>`).join('');
         }
+
         addWishBtn.addEventListener('click',()=>{
             const val=wishInput.value.trim();
             if(!val) return alert('请输入愿望内容！');
-            const list=JSON.parse(localStorage.getItem('wishList'));
+            const list=JSON.parse(localStorage.getItem('wishList')||'[]');
             list.push(val);
             localStorage.setItem('wishList',JSON.stringify(list));
             renderWish();
             wishInput.value='';
         });
+
         window.delWish=(i)=>{
-            const list=JSON.parse(localStorage.getItem('wishList'));
+            const list=JSON.parse(localStorage.getItem('wishList')||'[]');
             list.splice(i,1);
             localStorage.setItem('wishList',JSON.stringify(list));
             renderWish();
         };
+
         resetWishBtn.addEventListener('click',()=>{
             if(confirm('确定要清空所有愿望吗？')){
                 localStorage.setItem('wishList',JSON.stringify([]));
@@ -331,8 +305,15 @@
             }
         });
 
-        // 页面加载初始化
-        window.onload=()=>{initCheckIn();initWish();};
+        // 8. 页面初始化
+        window.onload = () => {
+            setDailyBackground();
+            updateDate();
+            setInterval(updateDate, 1000);
+            setDailyQuote();
+            initCheckIn();
+            renderWish();
+        };
     </script>
 </body>
 </html>
