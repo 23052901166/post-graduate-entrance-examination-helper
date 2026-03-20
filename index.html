@@ -75,20 +75,19 @@
                         <p id="lunarDate" class="text-gray-500 dark:text-gray-400 mt-1"></p>
                     </div>
                     <div class="text-center">
-                        <h2 class="text-lg font-semibold mb-2 text-gray-700 dark:text-gray-300">2026考研倒计时</h2>
-                        <div id="countDown" class="text-4xl font-bold text-gradient animate-count"></div>
-                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">初试时间：2026年12月20日</p>
-                    </div>
+  <h2 class="text-lg font-semibold mb-2 text-gray-700 dark:text-gray-300">2026考研倒计时</h2>
+  <div id="countDown" class="text-3xl font-bold text-gradient animate-count"></div>
+  <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">初试时间：2026年12月20日</p>
+</div>
                 </div>
             </div>
 
             <div class="card card-hover">
-                <h2 class="text-lg font-semibold mb-3 flex items-center text-gray-700 dark:text-gray-300">
-                    <i class="fas fa-quote-left text-primary mr-2"></i>每日励志
-                </h2>
-                <p id="dailyQuote" class="text-xl text-center py-6 italic text-gradient font-medium"></p>
-                <p id="dailyTip" class="text-gray-500 dark:text-gray-400 text-center text-sm mt-2 bg-gray-50 dark:bg-gray-800 py-2 rounded-lg"></p>
-            </div>
+  <h2 class="text-lg font-semibold mb-3 flex items-center text-gray-700 dark:text-gray-300">
+    <i class="fas fa-quote-left text-primary mr-2"></i>每日励志
+  </h2>
+  <p id="dailyQuote" class="text-xl text-center py-6 italic text-gradient font-medium"></p>
+</div>
 
             <div class="card card-hover">
                 <h2 class="text-lg font-semibold mb-4 flex items-center text-gray-700 dark:text-gray-300">
@@ -172,35 +171,54 @@
     <p class="mt-1">星光不负赶路人，时光不负考研人</p>
 </footer>
 
-    <script>
-        // 2026年底考研时间（12月20日）
-        const EXAM_DATE = new Date('2026-12-20');
-        
-        // 经典诗词励志语
-        const QUOTES = [
-            "长风破浪会有时，直挂云帆济沧海",
-            "路漫漫其修远兮，吾将上下而求索",
-            "千淘万漉虽辛苦，吹尽狂沙始到金",
-            "宝剑锋从磨砺出，梅花香自苦寒来",
-            "不经一番寒彻骨，怎得梅花扑鼻香",
-            "博观而约取，厚积而薄发",
-            "锲而不舍，金石可镂",
-            "黄沙百战穿金甲，不破楼兰终不还",
-            "愿君学长松，慎勿作桃李",
-            "穷且益坚，不坠青云之志",
-            "大鹏一日同风起，扶摇直上九万里",
-            "丈夫志四海，万里犹比邻",
-            "青春须早为，岂能长少年",
-            "千磨万击还坚劲，任尔东西南北风"
-        ];
-        
-        const TIPS = [
-            "每天背单词30分钟，坚持到考前",
-            "错题本是提分关键，定期复盘",
-            "保证睡眠，效率比时长更重要",
-            "政治后期押题卷必刷，选择题多练",
-            "英语阅读精读，吃透长难句"
-        ];
+    // 考研时间
+const EXAM_DATE = new Date('2026-12-20');
+
+// 励志诗词
+const QUOTES = [
+  "长风破浪会有时，直挂云帆济沧海",
+  "路漫漫其修远兮，吾将上下而求索",
+  "千淘万漉虽辛苦，吹尽狂沙始到金",
+  "宝剑锋从磨砺出，梅花香自苦寒来",
+  "不经一番寒彻骨，怎得梅花扑鼻香",
+  "博观而约取，厚积而薄发",
+  "锲而不舍，金石可镂",
+  "黄沙百战穿金甲，不破楼兰终不还",
+  "穷且益坚，不坠青云之志",
+  "大鹏一日同风起，扶摇直上九万里"
+];
+
+// 更新日期和倒计时（只显示天数）
+function updateDate() {
+  const now = new Date();
+  // 公历日期
+  const solar = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 周${'日一二三四五六'[now.getDay()]}`;
+  document.getElementById('solarDate').textContent = solar;
+  // 农历日期（如果有）
+  if (typeof Lunar !== 'undefined') {
+    const lunar = Lunar.fromDate(now);
+    document.getElementById('lunarDate').textContent = `${lunar.getYearInChinese()}年${lunar.getMonthInChinese()}月${lunar.getDayInChinese()}`;
+  }
+  // 倒计时 - 仅显示天数
+  const diff = EXAM_DATE - now;
+  const day = Math.ceil(diff / 86400000);
+  const countDownEl = document.getElementById('countDown');
+  countDownEl.innerHTML = `${day} 天`;
+  // 跳动动画
+  countDownEl.classList.add('animate-count');
+  setTimeout(() => countDownEl.classList.remove('animate-count'), 600);
+}
+
+// 设置每日诗词
+function setDailyQuote() {
+  const day = new Date().getDate();
+  document.getElementById('dailyQuote').textContent = QUOTES[day % QUOTES.length];
+}
+
+// 初始化
+setInterval(updateDate, 1000);
+updateDate();
+setDailyQuote();
 
         // 获取DOM元素
         const solarDate = document.getElementById('solarDate');
