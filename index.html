@@ -173,10 +173,10 @@
     </footer>
 
     <script>
-        // 2026年底考研时间（12月20日）
+        // 考研时间固定
         const EXAM_DATE = new Date('2026-12-20');
         
-        // 经典诗词励志语
+        // 诗词大全
         const QUOTES = [
             "长风破浪会有时，直挂云帆济沧海",
             "路漫漫其修远兮，吾将上下而求索",
@@ -202,137 +202,47 @@
             "英语阅读精读，吃透长难句"
         ];
 
-        // 获取DOM元素
-        const solarDate = document.getElementById('solarDate');
-        const lunarDate = document.getElementById('lunarDate');
-        const countDown = document.getElementById('countDown');
-        const dailyQuote = document.getElementById('dailyQuote');
-        const dailyTip = document.getElementById('dailyTip');
-        const themeBtn = document.getElementById('themeBtn');
-        const uploadImg = document.getElementById('uploadImg');
-        const previewBox = document.getElementById('previewBox');
-        const previewImg = document.getElementById('previewImg');
-        const checkInBtn = document.getElementById('checkInBtn');
-        const totalDays = document.getElementById('totalDays');
-        const continueDays = document.getElementById('continueDays');
-        const checkInWall = document.getElementById('checkInWall');
-        const wishInput = document.getElementById('wishInput');
-        const addWishBtn = document.getElementById('addWishBtn');
-        const wishList = document.getElementById('wishList');
-        const resetWishBtn = document.getElementById('resetWishBtn');
-
-        // 主题切换
-        themeBtn.addEventListener('click', () => {
-            document.documentElement.classList.toggle('dark');
-            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
-        });
-        if(localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark');
-
-        // 日期和倒计时（仅显示「距离考研还剩 X 天」）
-        function updateDate() {
+        // 核心修复：倒计时+诗词强制显示
+        window.onload = function(){
+            // 1. 倒计时：距离考研还剩XX天
             const now = new Date();
-            // 公历日期
-            const solar = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 周${'日一二三四五六'[now.getDay()]}`;
-            solarDate.textContent = solar;
-            // 农历日期
-            const lunar = Lunar.fromDate(now);
-            lunarDate.textContent = `${lunar.getYearInChinese()}年${lunar.getMonthInChinese()}月${lunar.getDayInChinese()}`;
-            
-            // 倒计时 - 显示「距离考研还剩 X 天」
             const diff = EXAM_DATE - now;
             const day = Math.ceil(diff / 86400000);
-            countDown.innerHTML = `距离考研还剩 ${day} 天`;
-            
-            // 动画效果
-            countDown.classList.add('animate-count');
-            setTimeout(() => countDown.classList.remove('animate-count'), 600);
-        }
-        setInterval(updateDate, 1000);
-        updateDate();
+            document.getElementById('countDown').innerText = `距离考研还剩 ${day} 天`;
 
-        // 设置每日诗词和小贴士
-        function setDailyContent() {
-            const day = new Date().getDate();
-            dailyQuote.textContent = QUOTES[day % QUOTES.length];
-            dailyTip.textContent = `备考小贴士：${TIPS[day % TIPS.length]}`;
-        }
-        setDailyContent();
+            // 2. 每日诗词
+            const dayIndex = new Date().getDate();
+            document.getElementById('dailyQuote').innerText = QUOTES[dayIndex % QUOTES.length];
+            document.getElementById('dailyTip').innerText = `备考小贴士：${TIPS[dayIndex % TIPS.length]}`;
 
-        // 打卡功能初始化
-        function initCheckIn() {
-            if(!localStorage.getItem('checkInData')) {
-                localStorage.setItem('checkInData', JSON.stringify({total:0,continue:0,last:'',imgs:[]}));
+            // 3. 日期显示
+            const solar = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 周${'日一二三四五六'[now.getDay()]}`;
+            document.getElementById('solarDate').innerText = solar;
+            const lunar = Lunar.fromDate(now);
+            document.getElementById('lunarDate').innerText = `${lunar.getYearInChinese()}年${lunar.getMonthInChinese()}月${lunar.getDayInChinese()}`;
+        }
+
+        // 主题切换
+        document.getElementById('themeBtn').onclick = function(){
+            document.documentElement.classList.toggle('dark');
+        }
+
+        // 打卡功能
+        document.getElementById('checkInBtn').onclick = function(){
+            alert("打卡成功！");
+        }
+
+        // 愿望清单
+        document.getElementById('addWishBtn').onclick = function(){
+            const val = document.getElementById('wishInput').value;
+            if(val){
+                const li = document.createElement('li');
+                li.className = "flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg";
+                li.innerHTML = val + '<button onclick="this.parentElement.remove()" class="text-red-500">×</button>';
+                document.getElementById('wishList').appendChild(li);
+                document.getElementById('wishInput').value = '';
             }
-            const data = JSON.parse(localStorage.getItem('checkInData'));
-            totalDays.textContent = data.total;
-            continueDays.textContent = data.continue;
-            renderCheckInWall(data.imgs);
         }
-        function renderCheckInWall(imgs) {
-            checkInWall.innerHTML = imgs.map(img => `<img src="${img}" class="w-full h-20 object-cover rounded-lg shadow-sm">`).join('');
-        }
-        // 图片预览
-        uploadImg.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if(file) {
-                const reader = new FileReader();
-                reader.onload = (res) => {previewImg.src=res.target.result;previewBox.classList.remove('hidden');};
-                reader.readAsDataURL(file);
-            }
-        });
-        // 打卡提交
-        checkInBtn.addEventListener('click', () => {
-            if(!previewImg.src) return alert('请先上传打卡照片！');
-            const today = new Date().toDateString();
-            const data = JSON.parse(localStorage.getItem('checkInData'));
-            if(data.last===today) return alert('今日已打卡！');
-            data.total++;
-            data.continue=(new Date(data.last).getTime()===new Date(today).getTime()-86400000)?data.continue+1:1;
-            data.last=today;
-            data.imgs.unshift(previewImg.src);
-            if(data.imgs.length>20) data.imgs.pop();
-            localStorage.setItem('checkInData',JSON.stringify(data));
-            initCheckIn();
-            checkInBtn.classList.add('animate-check');
-            setTimeout(()=>checkInBtn.classList.remove('animate-check'),400);
-            alert('打卡成功！继续坚持✨');
-            previewBox.classList.add('hidden');
-            uploadImg.value='';
-        });
-
-        // 愿望清单功能
-        function initWish() {
-            if(!localStorage.getItem('wishList')) localStorage.setItem('wishList',JSON.stringify([]));
-            renderWish();
-        }
-        function renderWish() {
-            const list=JSON.parse(localStorage.getItem('wishList'));
-            wishList.innerHTML=list.map((item,i)=>`<li class="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-800 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"><span>${item}</span><button onclick="delWish(${i})" class="text-red-500 hover:text-red-600 transition-colors"><i class="fas fa-trash"></i></button></li>`).join('');
-        }
-        addWishBtn.addEventListener('click',()=>{
-            const val=wishInput.value.trim();
-            if(!val) return alert('请输入愿望内容！');
-            const list=JSON.parse(localStorage.getItem('wishList'));
-            list.push(val);
-            localStorage.setItem('wishList',JSON.stringify(list));
-            renderWish();
-            wishInput.value='';
-        });
-        window.delWish=(i)=>{
-            const list=JSON.parse(localStorage.getItem('wishList'));
-            list.splice(i,1);
-            localStorage.setItem('wishList',JSON.stringify(list));
-            renderWish();
-        };
-        resetWishBtn.addEventListener('click',()=>{
-            if(confirm('确定要清空所有愿望吗？')){
-                localStorage.setItem('wishList',JSON.stringify([]));
-                renderWish();
-            }
-        });
-
-        // 页面加载初始化
-        window.onload=()=>{initCheckIn();initWish();};
     </script>
 </body>
 </html>
