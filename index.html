@@ -228,7 +228,7 @@
         });
         if(localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark');
 
-        // 日期和倒计时（仅显示天数）
+        // 日期和倒计时（仅显示「距离考研还剩 X 天」）
         function updateDate() {
             const now = new Date();
             // 公历日期
@@ -238,10 +238,10 @@
             const lunar = Lunar.fromDate(now);
             lunarDate.textContent = `${lunar.getYearInChinese()}年${lunar.getMonthInChinese()}月${lunar.getDayInChinese()}`;
             
-            // 倒计时 - 只显示天数
+            // 倒计时 - 显示「距离考研还剩 X 天」
             const diff = EXAM_DATE - now;
             const day = Math.ceil(diff / 86400000);
-            countDown.innerHTML = `${day} 天`;
+            countDown.innerHTML = `距离考研还剩 ${day} 天`;
             
             // 动画效果
             countDown.classList.add('animate-count');
