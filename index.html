@@ -7,20 +7,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.6.13/dist/lunar.min.js"></script>
-    <!-- 引入标准毛体草书 -->
+    <!-- 修改为：行楷字体 + 缩小字号 -->
     <style>
-        @font-face {
-            font-family: 'MaoZeShou';
-            src: url('https://cdn.jsdelivr.net/gh/Kongjian/maozedong-font@master/maozedong.woff2') format('woff2'),
-                 url('https://cdn.jsdelivr.net/gh/Kongjian/maozedong-font@master/maozedong.woff') format('woff');
-            font-weight: normal;
-            font-style: normal;
-        }
-        .font-mao {
-            font-family: 'MaoZeShou', cursive;
-            font-size: 3rem;
-            color: #5a3434;
-            letter-spacing: 0.1em;
+        .font-xingkai {
+            font-family: "KaiTi", "STKaiti", "华文行楷", serif; /* 标准行楷 */
+            font-size: 2.2rem; /* 字号调小（原3rem→2.2rem） */
+            color: #2c3e50;
+            letter-spacing: 0.05em;
+            line-height: 1.4;
         }
     </style>
     <script>
@@ -42,7 +36,7 @@
             }
         };
     </script>
-    <style type="text/tailwindcss">
+    <style type="textailwindcss">
         @layer utilities {
             .card { @apply bg-white/90 dark:bg-dark/90 rounded-2xl p-6 shadow-lg transition-all duration-300 border border-gray-100 dark:border-gray-800 backdrop-blur-sm; }
             .card-hover { @apply hover:-translate-y-1 hover:shadow-xl; }
@@ -102,8 +96,8 @@
                 <h2 class="text-lg font-semibold mb-3 flex items-center text-gray-700 dark:text-gray-300">
                     <i class="fas fa-quote-left text-primary mr-2"></i>每日励志
                 </h2>
-                <!-- 应用毛体 -->
-                <p id="dailyQuote" class="font-mao text-center py-6"></p>
+                <!-- 替换为行楷样式类 -->
+                <p id="dailyQuote" class="font-xingkai text-center py-6"></p>
                 <p id="dailyTip" class="text-gray-500 dark:text-gray-400 text-center text-sm mt-2 bg-gray-50 dark:bg-gray-800 py-2 rounded-lg"></p>
             </div>
 
@@ -191,21 +185,21 @@
 
     <script>
         const EXAM_DATE = new Date('2026-12-20');
+        // 🔥 核心替换：指定语录（邓小平不变+毛泽东精选）
         const QUOTES = [
-            "长风破浪会有时，直挂云帆济沧海",
-            "路漫漫其修远兮，吾将上下而求索",
-            "千淘万漉虽辛苦，吹尽狂沙始到金",
-            "宝剑锋从磨砺出，梅花香自苦寒来",
-            "不经一番寒彻骨，怎得梅花扑鼻香",
-            "博观而约取，厚积而薄发",
-            "锲而不舍，金石可镂",
-            "黄沙百战穿金甲，不破楼兰终不还",
-            "愿君学长松，慎勿作桃李",
-            "穷且益坚，不坠青云之志",
-            "大鹏一日同风起，扶摇直上九万里",
-            "丈夫志四海，万里犹比邻",
-            "青春须早为，岂能长少年",
-            "千磨万击还坚劲，任尔东西南北风"
+            // 邓小平（原样不动）
+            "我一生的经验有两条，一是忍耐，二是乐观主义。",
+            "乐观主义帮我度过了最艰难的岁月，问题早晚都会解决。",
+            "冷静观察，稳住阵脚，沉着应付，埋头实干。",
+            "等待，也是一种坚持与力量。",
+            "既然当了共产党人，就不能有私心，就要吃苦、坚守、向前走。",
+
+            // 毛泽东（你指定的革命乐观主义语录）
+            "下定决心，不怕牺牲，排除万难，去争取胜利。",
+            "与天奋斗，其乐无穷；与地奋斗，其乐无穷；与人奋斗，其乐无穷。",
+            "我们的同志在困难的时候，要看到成绩，看到光明，提高我们的勇气。",
+            "永久奋斗，是革命者最宝贵的品质。",
+            "当年鏖战急，弹洞前村壁。装点此关山，今朝更好看。"
         ];
         const TIPS = [
             "每天背单词30分钟，坚持到考前",
