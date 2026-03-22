@@ -7,6 +7,24 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.6.13/dist/lunar.min.js"></script>
+    <!-- 引入毛体草书字体 -->
+    <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* 定义毛体字体 */
+        @font-face {
+            font-family: 'Maobi';
+            src: url('https://cdn.jsdelivr.net/gh/StellaleeCN/maobi-font@main/maobi.woff2') format('woff2'),
+                 url('https://cdn.jsdelivr.net/gh/StellaleeCN/maobi-font@main/maobi.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+        /* 毛体样式类 */
+        .font-maobi {
+            font-family: 'Maobi', cursive;
+            font-size: 2.5rem;
+            color: #5a3434;
+        }
+    </style>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -86,7 +104,8 @@
                 <h2 class="text-lg font-semibold mb-3 flex items-center text-gray-700 dark:text-gray-300">
                     <i class="fas fa-quote-left text-primary mr-2"></i>每日励志
                 </h2>
-                <p id="dailyQuote" class="text-xl text-center py-6 italic text-gradient font-medium"></p>
+                <!-- 只给诗句加毛体类 -->
+                <p id="dailyQuote" class="font-maobi text-center py-6 italic"></p>
                 <p id="dailyTip" class="text-gray-500 dark:text-gray-400 text-center text-sm mt-2 bg-gray-50 dark:bg-gray-800 py-2 rounded-lg"></p>
             </div>
 
@@ -210,7 +229,7 @@
             const day = Math.ceil(diff / 86400000);
             document.getElementById('countDown').innerText = `距离考研还剩 ${day} 天`;
 
-            // 2. 每日诗词
+            // 2. 每日诗词（毛体显示）
             const dayIndex = new Date().getDate();
             document.getElementById('dailyQuote').innerText = QUOTES[dayIndex % QUOTES.length];
             document.getElementById('dailyTip').innerText = `备考小贴士：${TIPS[dayIndex % TIPS.length]}`;
