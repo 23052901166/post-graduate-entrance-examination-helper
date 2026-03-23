@@ -7,20 +7,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.6.13/dist/lunar.min.js"></script>
-    <!-- 引入标准毛体草书 -->
     <style>
-        @font-face {
-            font-family: 'MaoZeShou';
-            src: url('https://cdn.jsdelivr.net/gh/Kongjian/maozedong-font@master/maozedong.woff2') format('woff2'),
-                 url('https://cdn.jsdelivr.net/gh/Kongjian/maozedong-font@master/maozedong.woff') format('woff');
-            font-weight: normal;
-            font-style: normal;
-        }
-        .font-mao {
-            font-family: 'MaoZeShou', cursive;
-            font-size: 3rem;
+        .font-xingkai {
+            font-family: "KaiTi", "STKaiti", "华文行楷", serif;
+            font-size: 2.5rem;
             color: #5a3434;
-            letter-spacing: 0.1em;
+            letter-spacing: 0.05em;
         }
     </style>
     <script>
@@ -102,8 +94,7 @@
                 <h2 class="text-lg font-semibold mb-3 flex items-center text-gray-700 dark:text-gray-300">
                     <i class="fas fa-quote-left text-primary mr-2"></i>每日励志
                 </h2>
-                <!-- 应用毛体 -->
-                <p id="dailyQuote" class="font-mao text-center py-6"></p>
+                <p id="dailyQuote" class="font-xingkai text-center py-6"></p>
                 <p id="dailyTip" class="text-gray-500 dark:text-gray-400 text-center text-sm mt-2 bg-gray-50 dark:bg-gray-800 py-2 rounded-lg"></p>
             </div>
 
@@ -192,16 +183,16 @@
     <script>
         const EXAM_DATE = new Date('2026-12-20');
         const QUOTES = [
-            "我一生的经验有两条，一是忍耐，二是乐观。",
-    "乐观主义帮我度过了最艰难的岁月，问题早晚都会解决。",
-    "冷静观察，稳住阵脚，沉着应付，埋头实干。",
-    "等待，也是一种坚持与力量。",
-    "既然当了共产党人，就不能有私心，就要吃苦、坚守、向前走。",
+            "我一生的经验有两条，一是忍耐，二是乐观主义。",
+            "乐观主义帮我度过了最艰难的岁月，问题早晚都会解决。",
+            "冷静观察，稳住阵脚，沉着应付，埋头实干。",
+            "等待，也是一种坚持与力量。",
+            "既然当了共产党人，就不能有私心，就要吃苦、坚守、向前走。",
             "下定决心，不怕牺牲，排除万难，去争取胜利。",
-    "与天奋斗，其乐无穷；与地奋斗，其乐无穷；与人奋斗，其乐无穷。",
-    "我们的同志在困难的时候，要看到成绩，看到光明，提高我们的勇气。",
-    "永久奋斗，是革命者最宝贵的品质。",
-    "当年鏖战急，弹洞前村壁。装点此关山，今朝更好看。"
+            "与天奋斗，其乐无穷；与地奋斗，其乐无穷；与人奋斗，其乐无穷。",
+            "我们的同志在困难的时候，要看到成绩，看到光明，提高我们的勇气。",
+            "永久奋斗，是革命者最宝贵的品质。",
+            "当年鏖战急，弹洞前村壁。装点此关山，今朝更好看。"
         ];
         const TIPS = [
             "每天背单词30分钟，坚持到考前",
@@ -225,12 +216,96 @@
             document.getElementById('solarDate').innerText = solar;
             const lunar = Lunar.fromDate(now);
             document.getElementById('lunarDate').innerText = `${lunar.getYearInChinese()}年${lunar.getMonthInChinese()}月${lunar.getDayInChinese()}`;
+
+            // 加载本地存储的打卡记录
+            loadCheckInRecords();
         }
 
         document.getElementById('themeBtn').onclick = function(){
             document.documentElement.classList.toggle('dark');
         }
-        document.getElementById('checkInBtn').onclick = function(){ alert("打卡成功！"); }
+
+        // ✅ 修复：图片上传预览功能
+        document.getElementById('uploadImg').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const previewImg = document.getElementById('previewImg');
+                    const previewBox = document.getElementById('previewBox');
+                    previewImg.src = e.target.result;
+                    previewBox.classList.remove('hidden'); // 显示预览框
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // ✅ 修复：打卡功能（记录日期+保存到本地）
+        document.getElementById('checkInBtn').onclick = function(){
+            const today = new Date().toLocaleDateString();
+            const checkInWall = document.getElementById('checkInWall');
+            const previewImg = document.getElementById('previewImg');
+
+            // 创建打卡记录项
+            const record = document.createElement('div');
+            record.className = 'bg-gray-100 dark:bg-gray-800 rounded overflow-hidden shadow-sm';
+            record.innerHTML = `
+                <img src="${previewImg.src || 'https://picsum.photos/100/100'}" class="w-full h-24 object-cover">
+                <p class="text-xs text-center p-1">${today}</p>
+            `;
+            checkInWall.prepend(record);
+
+            // 保存到本地存储
+            const records = JSON.parse(localStorage.getItem('checkInRecords') || '[]');
+            records.push({ date: today, img: previewImg.src || '' });
+            localStorage.setItem('checkInRecords', JSON.stringify(records));
+
+            // 更新打卡天数
+            updateCheckInDays();
+            alert("打卡成功！");
+        }
+
+        // 加载打卡记录
+        function loadCheckInRecords() {
+            const records = JSON.parse(localStorage.getItem('checkInRecords') || '[]');
+            const checkInWall = document.getElementById('checkInWall');
+            checkInWall.innerHTML = '';
+            records.forEach(record => {
+                const recordEl = document.createElement('div');
+                recordEl.className = 'bg-gray-100 dark:bg-gray-800 rounded overflow-hidden shadow-sm';
+                recordEl.innerHTML = `
+                    <img src="${record.img || 'https://picsum.photos/100/100'}" class="w-full h-24 object-cover">
+                    <p class="text-xs text-center p-1">${record.date}</p>
+                `;
+                checkInWall.appendChild(recordEl);
+            });
+            updateCheckInDays();
+        }
+
+        // 更新累计/连续打卡天数
+        function updateCheckInDays() {
+            const records = JSON.parse(localStorage.getItem('checkInRecords') || '[]');
+            const totalDays = records.length;
+            let continueDays = 0;
+            if (totalDays > 0) {
+                const today = new Date();
+                let lastDate = new Date(records[records.length - 1].date);
+                continueDays = 1;
+                for (let i = records.length - 2; i >= 0; i--) {
+                    const currentDate = new Date(records[i].date);
+                    const diffTime = today - currentDate;
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    if (diffDays === continueDays) {
+                        continueDays++;
+                    } else {
+                        break;
+                    }
+                }
+            }
+            document.getElementById('totalDays').innerText = totalDays;
+            document.getElementById('continueDays').innerText = continueDays;
+        }
+
         document.getElementById('addWishBtn').onclick = function(){
             const val = document.getElementById('wishInput').value;
             if(val){
