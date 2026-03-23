@@ -8,314 +8,265 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.6.13/dist/lunar.min.js"></script>
     <style>
-        .font-xingkai {
-            font-family: "KaiTi", "STKaiti", "华文行楷", serif;
-            font-size: 2.5rem;
+        .font-kai {
+            font-family: "KaiTi", "STKaiti", serif;
+            font-size: 2rem;
             color: #5a3434;
-            letter-spacing: 0.05em;
         }
     </style>
     <script>
         tailwind.config = {
             darkMode: 'class',
-            theme: { 
-                extend: { 
-                    colors: { 
+            theme: {
+                extend: {
+                    colors: {
                         primary: '#1E40AF',
                         success: '#059669',
                         warning: '#F97316',
-                        light: '#F8FAFC',
-                        dark: '#0F172A'
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'system-ui', 'sans-serif']
                     }
-                } 
+                }
             }
         };
     </script>
     <style type="text/tailwindcss">
         @layer utilities {
-            .card { @apply bg-white/90 dark:bg-dark/90 rounded-2xl p-6 shadow-lg transition-all duration-300 border border-gray-100 dark:border-gray-800 backdrop-blur-sm; }
-            .card-hover { @apply hover:-translate-y-1 hover:shadow-xl; }
-            .btn { @apply px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2; }
-            .btn-hover { @apply hover:scale-105 active:scale-95; }
+            .card { @apply bg-white/90 dark:bg-slate-900/90 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-800 backdrop-blur-sm; }
+            .btn { @apply px-4 py-2 rounded-lg font-medium hover:scale-105 active:scale-95 transition-all; }
             .text-gradient { @apply bg-gradient-to-r from-primary to-warning bg-clip-text text-transparent; }
-            .animate-count { animation: count 0.6s ease-in-out; }
-            @keyframes count { 0% { transform: scale(1.15); opacity: 0.8; } 100% { transform: scale(1); opacity: 1; } }
-            .animate-check { animation: check 0.4s ease; }
-            @keyframes check { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-3px); } 75% { transform: translateX(3px); } }
         }
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-        .dark ::-webkit-scrollbar-track { background: #1e293b; }
-        .dark ::-webkit-scrollbar-thumb { background: #475669; }
         * { scroll-behavior: smooth; }
-        body { 
+        body {
+            background: url('https://picsum.photos/id/1035/1920/1080') no-repeat center center fixed;
+            background-size: cover;
             min-height: 100vh;
-            background: url('https://picsum.photos/id/1035/1920/1080') no-repeat center center fixed;
-            background-size: cover;
-        }
-        .dark body {
-            background: url('https://picsum.photos/id/1035/1920/1080') no-repeat center center fixed;
-            background-size: cover;
-            filter: brightness(0.8);
         }
     </style>
 </head>
 <body class="text-gray-800 dark:text-gray-200 transition-colors duration-300">
-    <nav class="sticky top-0 bg-white/90 dark:bg-dark/90 backdrop-blur-sm shadow-sm z-10 py-3 px-4 flex justify-between items-center">
-        <h1 class="text-xl font-bold text-gradient"><i class="fas fa-graduation-cap mr-2"></i>2026考研上岸</h1>
-        <button id="themeBtn" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-            <i class="fas fa-moon dark:hidden text-gray-600"></i>
-            <i class="fas fa-sun hidden dark:inline text-warning"></i>
-        </button>
-    </nav>
 
-    <div class="max-w-7xl mx-auto p-4 grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
-        <div class="md:col-span-2 space-y-6">
-            <div class="card card-hover">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="text-center md:text-left">
-                        <h2 class="text-lg font-semibold mb-2 text-gray-700 dark:text-gray-300">今日日期</h2>
-                        <p id="solarDate" class="text-2xl font-bold"></p>
-                        <p id="lunarDate" class="text-gray-500 dark:text-gray-400 mt-1"></p>
-                    </div>
-                    <div class="text-center">
-                        <h2 class="text-lg font-semibold mb-2 text-gray-700 dark:text-gray-300">2026考研倒计时</h2>
-                        <div id="countDown" class="text-4xl font-bold text-gradient animate-count"></div>
-                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">初试时间：2026年12月20日</p>
-                    </div>
-                </div>
-            </div>
+<!-- 导航栏 -->
+<nav class="sticky top-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm shadow-sm z-10 py-3 px-4 flex justify-between items-center">
+    <h1 class="text-xl font-bold text-gradient"><i class="fas fa-graduation-cap mr-2"></i>2026考研上岸</h1>
+    <button id="themeBtn" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
+        <i class="fas fa-moon dark:hidden text-gray-600"></i>
+        <i class="fas fa-sun hidden dark:inline text-warning"></i>
+    </button>
+</nav>
 
-            <div class="card card-hover">
-                <h2 class="text-lg font-semibold mb-3 flex items-center text-gray-700 dark:text-gray-300">
-                    <i class="fas fa-quote-left text-primary mr-2"></i>每日励志
-                </h2>
-                <p id="dailyQuote" class="font-xingkai text-center py-6"></p>
-                <p id="dailyTip" class="text-gray-500 dark:text-gray-400 text-center text-sm mt-2 bg-gray-50 dark:bg-gray-800 py-2 rounded-lg"></p>
-            </div>
-
-            <div class="card card-hover">
-                <h2 class="text-lg font-semibold mb-4 flex items-center text-gray-700 dark:text-gray-300">
-                    <i class="fas fa-check-circle text-success mr-2"></i>每日学习打卡
-                </h2>
-                <div class="flex gap-8 mb-5 justify-center">
-                    <div class="text-center">
-                        <p class="text-3xl font-bold text-primary" id="totalDays">0</p>
-                        <p class="text-sm text-gray-500 mt-1">累计打卡</p>
-                    </div>
-                    <div class="text-center">
-                        <p class="text-3xl font-bold text-warning" id="continueDays">0</p>
-                        <p class="text-sm text-gray-500 mt-1">连续打卡</p>
-                    </div>
+<!-- 主内容 -->
+<div class="max-w-7xl mx-auto p-4 grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
+    <!-- 左侧区域 -->
+    <div class="md:col-span-2 space-y-6">
+        <!-- 日期 + 倒计时 -->
+        <div class="card">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="text-center md:text-left">
+                    <h2 class="text-lg font-semibold mb-2">今日日期</h2>
+                    <p id="solarDate" class="text-2xl font-bold"></p>
+                    <p id="lunarDate" class="text-gray-500 dark:text-gray-400 mt-1"></p>
                 </div>
-                <div class="flex flex-col md:flex-row gap-4 items-center">
-                    <input type="file" id="uploadImg" accept="image/*" class="hidden">
-                    <label for="uploadImg" class="btn bg-primary text-white btn-hover">
-                        <i class="fas fa-upload mr-1"></i>上传打卡照片
-                    </label>
-                    <button id="checkInBtn" class="btn bg-success text-white btn-hover">
-                        <i class="fas fa-check mr-1"></i>完成今日打卡
-                    </button>
-                </div>
-                <div id="previewBox" class="mt-4 hidden rounded-lg overflow-hidden shadow-md">
-                    <img id="previewImg" class="w-full max-h-60 object-contain">
-                </div>
-                <div class="mt-6">
-                    <h3 class="text-sm font-semibold mb-2 text-gray-600 dark:text-gray-400">历史打卡记录</h3>
-                    <div id="checkInWall" class="grid grid-cols-3 gap-2 max-h-40 overflow-y-auto"></div>
+                <div class="text-center">
+                    <h2 class="text-lg font-semibold mb-2">考研倒计时</h2>
+                    <div id="countDown" class="text-4xl font-bold text-gradient"></div>
+                    <p class="text-sm text-gray-500 mt-1">2026年12月20日初试</p>
                 </div>
             </div>
         </div>
 
-        <div class="space-y-6">
-            <div class="card card-hover">
-                <h2 class="text-lg font-semibold mb-4 flex items-center text-gray-700 dark:text-gray-300">
-                    <i class="fas fa-star text-warning mr-2"></i>上岸愿望清单
-                </h2>
-                <div class="flex gap-2 mb-4">
-                    <input id="wishInput" placeholder="输入上岸愿望..." 
-                        class="flex-1 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-800 outline-none transition-all focus:ring-2 focus:ring-primary/50">
-                    <button id="addWishBtn" class="btn bg-primary text-white btn-hover px-3">
-                        <i class="fas fa-plus"></i>
-                    </button>
+        <!-- 每日励志 -->
+        <div class="card">
+            <h2 class="text-lg font-semibold mb-3"><i class="fas fa-quote-left text-primary mr-2"></i>每日励志</h2>
+            <p id="dailyQuote" class="font-kai text-center py-4"></p>
+            <p id="dailyTip" class="text-sm text-gray-500 text-center bg-gray-50 dark:bg-gray-800 py-2 rounded-lg"></p>
+        </div>
+
+        <!-- 学习打卡 -->
+        <div class="card">
+            <h2 class="text-lg font-semibold mb-4"><i class="fas fa-check-circle text-success mr-2"></i>每日学习打卡</h2>
+            <div class="flex gap-8 justify-center mb-5">
+                <div class="text-center">
+                    <p class="text-3xl font-bold text-primary" id="totalDays">0</p>
+                    <p class="text-sm text-gray-500">累计打卡</p>
                 </div>
-                <ul id="wishList" class="max-h-60 overflow-y-auto space-y-2"></ul>
-                <button id="resetWishBtn" class="mt-4 text-sm text-gray-500 hover:text-red-500 transition-colors">重置清单</button>
+                <div class="text-center">
+                    <p class="text-3xl font-bold text-warning" id="continueDays">0</p>
+                    <p class="text-sm text-gray-500">连续打卡</p>
+                </div>
             </div>
 
-            <div class="card card-hover">
-                <h2 class="text-lg font-semibold mb-4 flex items-center text-gray-700 dark:text-gray-300">
-                    <i class="fas fa-calendar-alt text-primary mr-2"></i>考研关键节点
-                </h2>
-                <ul class="space-y-3 text-sm">
-                    <li class="flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                        <span>预报名</span><span class="text-primary font-medium">2026年9月下旬</span>
-                    </li>
-                    <li class="flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                        <span>正式报名</span><span class="text-primary font-medium">2026年10月中旬</span>
-                    </li>
-                    <li class="flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                        <span>现场确认</span><span class="text-primary font-medium">2026年11月上旬</span>
-                    </li>
-                    <li class="flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                        <span>初试考试</span><span class="text-warning font-medium">2026年12月20日</span>
-                    </li>
-                    <li class="flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                        <span>成绩查询</span><span class="text-primary font-medium">2027年2月中旬</span>
-                    </li>
-                    <li class="flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                        <span>复试调剂</span><span class="text-primary font-medium">2027年3-4月</span>
-                    </li>
-                </ul>
+            <div class="flex flex-col md:flex-row gap-4 items-center">
+                <input type="file" id="uploadImg" accept="image/*" class="hidden">
+                <label for="uploadImg" class="btn bg-primary text-white"><i class="fas fa-upload mr-1"></i>上传打卡照片</label>
+                <button id="checkInBtn" class="btn bg-success text-white"><i class="fas fa-check mr-1"></i>完成今日打卡</button>
+            </div>
+
+            <!-- 图片预览 -->
+            <div id="previewBox" class="mt-4 hidden rounded-lg overflow-hidden shadow-md">
+                <img id="previewImg" class="w-full max-h-60 object-contain" alt="预览">
+            </div>
+
+            <!-- 打卡记录 -->
+            <div class="mt-6">
+                <h3 class="text-sm font-semibold mb-2">历史打卡记录</h3>
+                <div id="checkInWall" class="grid grid-cols-3 gap-2 max-h-40 overflow-y-auto"></div>
             </div>
         </div>
     </div>
 
-    <footer class="text-center py-6 text-gray-500 dark:text-gray-400 text-sm mt-8">
-        <p>2026考研上岸助力站 | 数据存储在本地，刷新不丢失</p>
-        <p class="mt-1">星光不负赶路人，时光不负考研人</p>
-    </footer>
+    <!-- 右侧区域 -->
+    <div class="space-y-6">
+        <!-- 愿望清单 -->
+        <div class="card">
+            <h2 class="text-lg font-semibold mb-4"><i class="fas fa-star text-warning mr-2"></i>上岸愿望清单</h2>
+            <div class="flex gap-2 mb-4">
+                <input id="wishInput" placeholder="输入你的上岸愿望..." class="flex-1 px-3 py-2 rounded-lg border dark:bg-gray-800 outline-none focus:ring-2 focus:ring-primary/50">
+                <button id="addWishBtn" class="btn bg-primary text-white px-3"><i class="fas fa-plus"></i></button>
+            </div>
+            <ul id="wishList" class="max-h-60 overflow-y-auto space-y-2"></ul>
+            <button id="resetWishBtn" class="mt-4 text-sm text-gray-500 hover:text-red-500">重置清单</button>
+        </div>
 
-    <script>
-        const EXAM_DATE = new Date('2026-12-20');
-        const QUOTES = [
-            "我一生的经验有两条，一是忍耐，二是乐观主义。",
-            "乐观主义帮我度过了最艰难的岁月，问题早晚都会解决。",
-            "冷静观察，稳住阵脚，沉着应付，埋头实干。",
-            "等待，也是一种坚持与力量。",
-            "既然当了共产党人，就不能有私心，就要吃苦、坚守、向前走。",
-            "下定决心，不怕牺牲，排除万难，去争取胜利。",
-            "与天奋斗，其乐无穷；与地奋斗，其乐无穷；与人奋斗，其乐无穷。",
-            "我们的同志在困难的时候，要看到成绩，看到光明，提高我们的勇气。",
-            "永久奋斗，是革命者最宝贵的品质。",
-            "当年鏖战急，弹洞前村壁。装点此关山，今朝更好看。"
-        ];
-        const TIPS = [
-            "每天背单词30分钟，坚持到考前",
-            "错题本是提分关键，定期复盘",
-            "保证睡眠，效率比时长更重要",
-            "政治后期押题卷必刷，选择题多练",
-            "英语阅读精读，吃透长难句"
-        ];
+        <!-- 关键节点 -->
+        <div class="card">
+            <h2 class="text-lg font-semibold mb-4"><i class="fas fa-calendar-alt text-primary mr-2"></i>考研关键节点</h2>
+            <ul class="space-y-3 text-sm">
+                <li class="flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg"><span>预报名</span><span class="text-primary">2026年9月下旬</span></li>
+                <li class="flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg"><span>正式报名</span><span class="text-primary">2026年10月中旬</span></li>
+                <li class="flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg"><span>现场确认</span><span class="text-primary">2026年11月上旬</span></li>
+                <li class="flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg"><span>初试考试</span><span class="text-warning">2026年12月20日</span></li>
+                <li class="flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg"><span>成绩查询</span><span class="text-primary">2027年2月中旬</span></li>
+                <li class="flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg"><span>复试调剂</span><span class="text-primary">2027年3-4月</span></li>
+            </ul>
+        </div>
+    </div>
+</div>
 
-        window.onload = function(){
-            const now = new Date();
-            const diff = EXAM_DATE - now;
-            const day = Math.ceil(diff / 86400000);
-            document.getElementById('countDown').innerText = `距离考研还剩 ${day} 天`;
+<!-- 页脚 -->
+<footer class="text-center py-6 text-gray-500 text-sm mt-8">
+    <p>2026考研上岸助力站 | 本地存储，刷新不丢失</p>
+    <p class="mt-1">星光不负赶路人，时光不负考研人</p>
+</footer>
 
-            const dayIndex = new Date().getDate();
-            document.getElementById('dailyQuote').innerText = QUOTES[dayIndex % QUOTES.length];
-            document.getElementById('dailyTip').innerText = `备考小贴士：${TIPS[dayIndex % TIPS.length]}`;
+<script>
+    // 考研时间
+    const EXAM_DATE = new Date('2026-12-20');
+    // 励志语录
+    const QUOTES = ["星光不问赶路人，时光不负有心人","关关难过关关过，前路漫漫亦灿灿","看似不起眼的日复一日，终会看到坚持的意义","彼方尚有荣光在，何须悲叹少年轻","那些看似不起波澜的日复一日，会突然在某一天让人看到坚持的意义"];
+    const TIPS = ["每天背单词30分钟，坚持到底","错题及时复盘，效率翻倍","保证睡眠，高效学习","政治选择题多练，后期提分快","英语阅读精读，吃透长难句"];
 
-            const solar = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 周${'日一二三四五六'[now.getDay()]}`;
-            document.getElementById('solarDate').innerText = solar;
-            const lunar = Lunar.fromDate(now);
-            document.getElementById('lunarDate').innerText = `${lunar.getYearInChinese()}年${lunar.getMonthInChinese()}月${lunar.getDayInChinese()}`;
+    // 页面加载
+    window.onload = function(){
+        // 倒计时
+        let diff = EXAM_DATE - new Date();
+        document.getElementById('countDown').innerText = Math.ceil(diff / 86400000) + " 天";
+        
+        // 日期
+        let now = new Date();
+        let solar = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 周${'日一二三四五六'[now.getDay()]}`;
+        document.getElementById('solarDate').innerText = solar;
+        let lunar = Lunar.fromDate(now);
+        document.getElementById('lunarDate').innerText = `${lunar.getYearInChinese()}年${lunar.getMonthInChinese()}月${lunar.getDayInChinese()}`;
+        
+        // 励志语录
+        let idx = now.getDate() % QUOTES.length;
+        document.getElementById('dailyQuote').innerText = QUOTES[idx];
+        document.getElementById('dailyTip').innerText = "备考小贴士：" + TIPS[idx];
+        
+        // 加载数据
+        loadCheckIn();
+        loadWishes();
+    };
 
-            // 加载本地存储的打卡记录
-            loadCheckInRecords();
-        }
+    // 主题切换
+    document.getElementById('themeBtn').onclick = () => document.documentElement.classList.toggle('dark');
 
-        document.getElementById('themeBtn').onclick = function(){
-            document.documentElement.classList.toggle('dark');
-        }
+    // 图片上传预览
+    let imgBase64 = "";
+    document.getElementById('uploadImg').addEventListener('change', function(e){
+        let file = e.target.files[0];
+        if(!file) return;
+        let reader = new FileReader();
+        reader.onload = (e) => {
+            imgBase64 = e.target.result;
+            document.getElementById('previewImg').src = imgBase64;
+            document.getElementById('previewBox').classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
+    });
 
-        // ✅ 修复：图片上传预览功能
-        document.getElementById('uploadImg').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const previewImg = document.getElementById('previewImg');
-                    const previewBox = document.getElementById('previewBox');
-                    previewImg.src = e.target.result;
-                    previewBox.classList.remove('hidden'); // 显示预览框
-                }
-                reader.readAsDataURL(file);
-            }
+    // 打卡功能
+    document.getElementById('checkInBtn').onclick = function(){
+        if(!imgBase64) return alert("请先上传打卡照片！");
+        let today = new Date().toLocaleDateString();
+        
+        // 保存记录
+        let records = JSON.parse(localStorage.getItem('checkIn') || '[]');
+        records.push({date: today, img: imgBase64});
+        localStorage.setItem('checkIn', JSON.stringify(records));
+        
+        loadCheckIn();
+        alert("打卡成功！");
+        document.getElementById('previewBox').classList.add('hidden');
+        imgBase64 = "";
+    };
+
+    // 加载打卡记录
+    function loadCheckIn(){
+        let records = JSON.parse(localStorage.getItem('checkIn') || '[]');
+        let wall = document.getElementById('checkInWall');
+        wall.innerHTML = "";
+        records.forEach(item => {
+            let div = document.createElement('div');
+            div.className = "bg-gray-100 dark:bg-gray-800 rounded overflow-hidden";
+            div.innerHTML = `<img src="${item.img}" class="w-full h-24 object-cover"><p class="text-xs text-center p-1">${item.date}</p>`;
+            wall.appendChild(div);
         });
+        document.getElementById('totalDays').innerText = records.length;
+    }
 
-        // ✅ 修复：打卡功能（记录日期+保存到本地）
-        document.getElementById('checkInBtn').onclick = function(){
-            const today = new Date().toLocaleDateString();
-            const checkInWall = document.getElementById('checkInWall');
-            const previewImg = document.getElementById('previewImg');
+    // 愿望清单
+    document.getElementById('addWishBtn').onclick = function(){
+        let val = document.getElementById('wishInput').value.trim();
+        if(!val) return;
+        let list = document.getElementById('wishList');
+        let li = document.createElement('li');
+        li.className = "flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg";
+        li.innerHTML = val + '<button onclick="delWish(this)" class="text-red-500">×</button>';
+        list.appendChild(li);
+        document.getElementById('wishInput').value = "";
+        saveWishes();
+    };
 
-            // 创建打卡记录项
-            const record = document.createElement('div');
-            record.className = 'bg-gray-100 dark:bg-gray-800 rounded overflow-hidden shadow-sm';
-            record.innerHTML = `
-                <img src="${previewImg.src || 'https://picsum.photos/100/100'}" class="w-full h-24 object-cover">
-                <p class="text-xs text-center p-1">${today}</p>
-            `;
-            checkInWall.prepend(record);
+    // 删除愿望
+    function delWish(obj){
+        obj.parentElement.remove();
+        saveWishes();
+    }
 
-            // 保存到本地存储
-            const records = JSON.parse(localStorage.getItem('checkInRecords') || '[]');
-            records.push({ date: today, img: previewImg.src || '' });
-            localStorage.setItem('checkInRecords', JSON.stringify(records));
+    // 重置愿望
+    document.getElementById('resetWishBtn').onclick = () => {
+        document.getElementById('wishList').innerHTML = "";
+        localStorage.removeItem('wishes');
+    };
 
-            // 更新打卡天数
-            updateCheckInDays();
-            alert("打卡成功！");
-        }
+    // 保存愿望
+    function saveWishes(){
+        let items = document.querySelectorAll('#wishList li');
+        let arr = [];
+        items.forEach(i => arr.push(i.innerText.replace('×','')));
+        localStorage.setItem('wishes', JSON.stringify(arr));
+    }
 
-        // 加载打卡记录
-        function loadCheckInRecords() {
-            const records = JSON.parse(localStorage.getItem('checkInRecords') || '[]');
-            const checkInWall = document.getElementById('checkInWall');
-            checkInWall.innerHTML = '';
-            records.forEach(record => {
-                const recordEl = document.createElement('div');
-                recordEl.className = 'bg-gray-100 dark:bg-gray-800 rounded overflow-hidden shadow-sm';
-                recordEl.innerHTML = `
-                    <img src="${record.img || 'https://picsum.photos/100/100'}" class="w-full h-24 object-cover">
-                    <p class="text-xs text-center p-1">${record.date}</p>
-                `;
-                checkInWall.appendChild(recordEl);
-            });
-            updateCheckInDays();
-        }
-
-        // 更新累计/连续打卡天数
-        function updateCheckInDays() {
-            const records = JSON.parse(localStorage.getItem('checkInRecords') || '[]');
-            const totalDays = records.length;
-            let continueDays = 0;
-            if (totalDays > 0) {
-                const today = new Date();
-                let lastDate = new Date(records[records.length - 1].date);
-                continueDays = 1;
-                for (let i = records.length - 2; i >= 0; i--) {
-                    const currentDate = new Date(records[i].date);
-                    const diffTime = today - currentDate;
-                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                    if (diffDays === continueDays) {
-                        continueDays++;
-                    } else {
-                        break;
-                    }
-                }
-            }
-            document.getElementById('totalDays').innerText = totalDays;
-            document.getElementById('continueDays').innerText = continueDays;
-        }
-
-        document.getElementById('addWishBtn').onclick = function(){
-            const val = document.getElementById('wishInput').value;
-            if(val){
-                const li = document.createElement('li');
-                li.className = "flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg";
-                li.innerHTML = val + '<button onclick="this.parentElement.remove()" class="text-red-500">×</button>';
-                document.getElementById('wishList').appendChild(li);
-                document.getElementById('wishInput').value = '';
-            }
-        }
-    </script>
+    // 加载愿望
+    function loadWishes(){
+        let arr = JSON.parse(localStorage.getItem('wishes') || '[]');
+        arr.forEach(item => {
+            let li = document.createElement('li');
+            li.className = "flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg";
+            li.innerHTML = item + '<button onclick="delWish(this)" class="text-red-500">×</button>';
+            document.getElementById('wishList').appendChild(li);
+        });
+    }
+</script>
 </body>
 </html>
