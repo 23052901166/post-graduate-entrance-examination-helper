@@ -45,7 +45,8 @@
             @keyframes count { 0% { transform: scale(1.15); opacity: 0.8; } 100% { transform: scale(1); opacity: 1; } }
             .animate-check { animation: check 0.4s ease; }
             @keyframes check { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-3px); } 75% { transform: translateX(3px); } }
-            .tab-active { @apply bg-primary text-white !important; }
+            .tab-active { @apply bg-primary text-white !important; pointer-events: auto !important; z-index: 10 !important; }
+            .tab-btn { @apply cursor-pointer !important; pointer-events: auto !important; }
         }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 3px; }
@@ -76,10 +77,10 @@
         </button>
     </nav>
 
-    <!-- 标签切换栏 -->
     <div class="max-w-7xl mx-auto p-4">
+        <!-- 修复后：可正常点击的标签切换按钮 -->
         <div class="flex gap-3 mb-6">
-            <button class="tab-btn btn bg-gray-100 dark:bg-gray-800 tab-active" data-tab="home">
+            <button class="tab-btn btn bg-gray-100 dark:bg-gray-800" data-tab="home">
                 <i class="fas fa-home mr-1"></i>首页
             </button>
             <button class="tab-btn btn bg-gray-100 dark:bg-gray-800" data-tab="score">
@@ -190,14 +191,13 @@
             </div>
         </div>
 
-        <!-- 分数查询页（新增功能） -->
+        <!-- 分数查询页（功能正常） -->
         <div id="score" class="tab-content">
             <div class="card card-hover max-w-3xl mx-auto">
                 <h2 class="text-xl font-bold text-gradient mb-6 flex items-center">
                     <i class="fas fa-university mr-2"></i>2026法硕（非法学）复试分数线查询
                 </h2>
                 
-                <!-- 院校选择 -->
                 <div class="mb-6">
                     <label class="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">选择院校</label>
                     <select id="schoolSelect" class="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-800 outline-none focus:ring-2 focus:ring-primary/50">
@@ -210,7 +210,6 @@
                     </select>
                 </div>
 
-                <!-- 分数线展示 -->
                 <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg mb-6">
                     <h3 class="font-medium mb-3 text-gray-700 dark:text-gray-300">院校复试分数线</h3>
                     <div id="scoreLine" class="grid grid-cols-2 md:grid-cols-5 gap-3 text-sm">
@@ -222,7 +221,6 @@
                     </div>
                 </div>
 
-                <!-- 分数输入 -->
                 <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
                     <div>
                         <label class="block text-sm mb-2">总分</label>
@@ -246,12 +244,10 @@
                     </div>
                 </div>
 
-                <!-- 查询按钮 -->
                 <button id="checkScoreBtn" class="btn bg-primary text-white btn-hover w-full mb-6">
                     <i class="fas fa-search mr-1"></i>查询是否过线
                 </button>
 
-                <!-- 结果展示 -->
                 <div id="resultBox" class="p-5 rounded-lg text-center text-lg font-bold hidden">
                     <p id="resultText"></p>
                 </div>
@@ -265,7 +261,7 @@
     </footer>
 
     <script>
-        // 原有常量
+        // 核心常量
         const EXAM_DATE = new Date('2026-12-20');
         const QUOTES = [
             "我一生的经验有两条，一是忍耐，二是乐观主义。",
@@ -284,8 +280,6 @@
             "政治后期押题卷必刷，选择题多练",
             "英语阅读精读，吃透长难句"
         ];
-
-        // 新增：分数线数据
         const SCORE_DATA = {
             "1": {"学校": "北京大学", "总分": 361, "政治": 55, "外语": 55, "课1": 90, "课2": 90},
             "2": {"学校": "中国人民大学", "总分": 355, "政治": 60, "外语": 60, "课1": 90, "课2": 90},
@@ -296,20 +290,17 @@
         };
 
         window.onload = function(){
-            // 原有功能初始化
-            initHome();
-            // 新增：分数查询初始化
-            initScoreQuery();
-            // 标签切换
-            initTabs();
+            initTabs();      // 先初始化标签（修复关键）
+            initHome();      // 加载首页功能
+            initScoreQuery();// 加载分数查询功能
         }
 
-        // 标签切换功能
+        // ✅ 修复：标签切换功能（PC+移动端都可点击）
         function initTabs() {
             const tabs = document.querySelectorAll('.tab-btn');
             tabs.forEach(tab => {
                 tab.addEventListener('click', () => {
-                    // 移除所有激活状态
+                    // 重置所有标签
                     tabs.forEach(t => t.classList.remove('tab-active'));
                     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
                     // 激活当前
@@ -317,131 +308,86 @@
                     document.getElementById(tab.dataset.tab).classList.add('active');
                 });
             });
+            // 默认激活首页
+            document.querySelector('[data-tab="home"]').classList.add('tab-active');
         }
 
-        // 原有首页功能
+        // 首页功能初始化
         function initHome() {
             const now = new Date();
-            const diff = EXAM_DATE - now;
-            const day = Math.ceil(diff / 86400000);
-            document.getElementById('countDown').innerText = `距离考研还剩 ${day} 天`;
-
-            const dayIndex = new Date().getDate();
+            document.getElementById('countDown').innerText = `距离考研还剩 ${Math.ceil((EXAM_DATE - now)/86400000)} 天`;
+            const dayIndex = now.getDate();
             document.getElementById('dailyQuote').innerText = QUOTES[dayIndex % QUOTES.length];
             document.getElementById('dailyTip').innerText = `备考小贴士：${TIPS[dayIndex % TIPS.length]}`;
-
+            // 日期
             const solar = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 周${'日一二三四五六'[now.getDay()]}`;
             document.getElementById('solarDate').innerText = solar;
             const lunar = Lunar.fromDate(now);
             document.getElementById('lunarDate').innerText = `${lunar.getYearInChinese()}年${lunar.getMonthInChinese()}月${lunar.getDayInChinese()}`;
-
             loadCheckInRecords();
         }
 
-        // 新增：分数查询功能
+        // 分数查询功能
         function initScoreQuery() {
             const schoolSelect = document.getElementById('schoolSelect');
-            const checkBtn = document.getElementById('checkScoreBtn');
-            
-            // 切换学校更新分数线
             function updateScoreLine() {
-                const data = SCORE_DATA[schoolSelect.value];
-                document.getElementById('lineTotal').innerText = data.总分;
-                document.getElementById('linePol').innerText = data.政治;
-                document.getElementById('lineEng').innerText = data.外语;
-                document.getElementById('lineSub1').innerText = data.课1;
-                document.getElementById('lineSub2').innerText = data.课2;
+                const d = SCORE_DATA[schoolSelect.value];
+                document.getElementById('lineTotal').innerText=d.总分;
+                document.getElementById('linePol').innerText=d.政治;
+                document.getElementById('lineEng').innerText=d.外语;
+                document.getElementById('lineSub1').innerText=d.课1;
+                document.getElementById('lineSub2').innerText=d.课2;
             }
-            
-            // 查询判断
-            function checkScore() {
-                const data = SCORE_DATA[schoolSelect.value];
-                const total = Number(document.getElementById('totalScore').value) || 0;
-                const pol = Number(document.getElementById('polScore').value) || 0;
-                const eng = Number(document.getElementById('engScore').value) || 0;
-                const sub1 = Number(document.getElementById('sub1Score').value) || 0;
-                const sub2 = Number(document.getElementById('sub2Score').value) || 0;
-                
-                const isPass = (total >= data.总分 && pol >= data.政治 && eng >= data.外语 && sub1 >= data.课1 && sub2 >= data.课2);
-                const resultBox = document.getElementById('resultBox');
-                const resultText = document.getElementById('resultText');
-                
-                resultBox.classList.remove('hidden', 'bg-success/20', 'bg-red-500/20', 'text-success', 'text-red-500');
-                if(isPass) {
-                    resultBox.classList.add('bg-success/20', 'text-success');
-                    resultText.innerHTML = `✅ 恭喜！分数达到【${data.学校}】复试线要求！`;
-                } else {
-                    resultBox.classList.add('bg-red-500/20', 'text-red-500');
-                    resultText.innerHTML = `❌ 遗憾，分数未达到【${data.学校}】复试线要求`;
+            document.getElementById('checkScoreBtn').onclick = () => {
+                const d=SCORE_DATA[schoolSelect.value];
+                const t=+document.getElementById('totalScore').value||0;
+                const p=+document.getElementById('polScore').value||0;
+                const e=+document.getElementById('engScore').value||0;
+                const s1=+document.getElementById('sub1Score').value||0;
+                const s2=+document.getElementById('sub2Score').value||0;
+                const pass = t>=d.总分 && p>=d.政治 && e>=d.外语 && s1>=d.课1 && s2>=d.课2;
+                const box=document.getElementById('resultBox');
+                const txt=document.getElementById('resultText');
+                box.className='p-5 rounded-lg text-center text-lg font-bold block';
+                if(pass){
+                    box.classList.add('bg-success/20','text-success');
+                    txt.innerText=`✅ 恭喜！达到【${d.学校}】复试线！`;
+                }else{
+                    box.classList.add('bg-red-500/20','text-red-500');
+                    txt.innerText=`❌ 未达到【${d.学校}】复试线`;
                 }
-                resultBox.classList.add('block');
-            }
-            
-            // 绑定事件
-            schoolSelect.addEventListener('change', updateScoreLine);
-            checkBtn.addEventListener('click', checkScore);
-            // 初始化
+            };
+            schoolSelect.addEventListener('change',updateScoreLine);
             updateScoreLine();
         }
 
-        // 原有原有功能保留
-        document.getElementById('themeBtn').onclick = function(){
-            document.documentElement.classList.toggle('dark');
+        // 深色模式
+        document.getElementById('themeBtn').onclick=()=>document.documentElement.classList.toggle('dark');
+
+        // 打卡功能
+        document.getElementById('uploadImg').onchange=e=>{
+            const f=e.target.files[0];if(f){const r=new FileReader();r.onload=e=>{document.getElementById('previewImg').src=e.target.result;document.getElementById('previewBox').classList.remove('hidden');};r.readAsDataURL(f);}};
+        document.getElementById('checkInBtn').onclick=()=>{
+            const r={date:new Date().toLocaleDateString(),img:document.getElementById('previewImg').src||''};
+            const rs=JSON.parse(localStorage.getItem('checkInRecords')||'[]');rs.push(r);localStorage.setItem('checkInRecords',JSON.stringify(rs));
+            loadCheckInRecords();alert("打卡成功！");
+        };
+        function loadCheckInRecords(){
+            const rs=JSON.parse(localStorage.getItem('checkInRecords')||'[]');
+            const w=document.getElementById('checkInWall');w.innerHTML='';
+            rs.forEach(r=>{const div=document.createElement('div');div.className='bg-gray-100 dark:bg-gray-800 rounded overflow-hidden';div.innerHTML=`<img src="${r.img}" class="w-full h-24 object-cover"><p class="text-xs text-center p-1">${r.date}</p>`;w.appendChild(div);});
+            document.getElementById('totalDays').innerText=rs.length;
+            document.getElementById('continueDays').innerText=rs.length?1:0;
         }
 
-        document.getElementById('uploadImg').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if(file) {
-                const reader = new FileReader();
-                reader.onload = e => {
-                    document.getElementById('previewImg').src = e.target.result;
-                    document.getElementById('previewBox').classList.remove('hidden');
-                }
-                reader.readAsDataURL(file);
+        // 愿望清单
+        document.getElementById('addWishBtn').onclick=()=>{
+            const v=document.getElementById('wishInput').value.trim();if(v){
+                const li=document.createElement('li');li.className='flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg';
+                li.innerHTML=`${v}<button onclick="this.parentElement.remove()" class="text-red-500">×</button>`;
+                document.getElementById('wishList').appendChild(li);document.getElementById('wishInput').value='';
             }
-        });
-
-        document.getElementById('checkInBtn').onclick = function(){
-            const today = new Date().toLocaleDateString();
-            const previewImg = document.getElementById('previewImg');
-            const record = { date: today, img: previewImg.src || '' };
-            const records = JSON.parse(localStorage.getItem('checkInRecords') || '[]');
-            records.push(record);
-            localStorage.setItem('checkInRecords', JSON.stringify(records));
-            loadCheckInRecords();
-            alert("打卡成功！");
-        }
-
-        function loadCheckInRecords() {
-            const records = JSON.parse(localStorage.getItem('checkInRecords') || '[]');
-            const checkInWall = document.getElementById('checkInWall');
-            checkInWall.innerHTML = '';
-            records.forEach(record => {
-                const el = document.createElement('div');
-                el.className = 'bg-gray-100 dark:bg-gray-800 rounded overflow-hidden';
-                el.innerHTML = `<img src="${record.img}" class="w-full h-24 object-cover"><p class="text-xs text-center p-1">${record.date}</p>`;
-                checkInWall.appendChild(el);
-            });
-            updateCheckInDays();
-        }
-
-        function updateCheckInDays() {
-            const records = JSON.parse(localStorage.getItem('checkInRecords') || '[]');
-            document.getElementById('totalDays').innerText = records.length;
-            // 连续天数简化逻辑
-            document.getElementById('continueDays').innerText = records.length > 0 ? 1 : 0;
-        }
-
-        document.getElementById('addWishBtn').onclick = function(){
-            const val = document.getElementById('wishInput').value.trim();
-            if(val) {
-                const li = document.createElement('li');
-                li.className = "flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg";
-                li.innerHTML = `${val}<button onclick="this.parentElement.remove()" class="text-red-500">×</button>`;
-                document.getElementById('wishList').appendChild(li);
-                document.getElementById('wishInput').value = '';
-            }
-        }
+        };
     </script>
 </body>
 </html>
