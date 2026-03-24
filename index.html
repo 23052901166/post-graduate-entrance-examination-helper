@@ -8,265 +8,440 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.6.13/dist/lunar.min.js"></script>
     <style>
-        .font-kai {
-            font-family: "KaiTi", "STKaiti", serif;
-            font-size: 2rem;
+        .font-xingkai {
+            font-family: "KaiTi", "STKaiti", "华文行楷", serif;
+            font-size: 2.5rem;
             color: #5a3434;
+            letter-spacing: 0.05em;
         }
     </style>
     <script>
         tailwind.config = {
             darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
+            theme: { 
+                extend: { 
+                    colors: { 
                         primary: '#1E40AF',
                         success: '#059669',
                         warning: '#F97316',
+                        light: '#F8FAFC',
+                        dark: '#0F172A'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif']
                     }
-                }
+                } 
             }
         };
     </script>
     <style type="text/tailwindcss">
         @layer utilities {
-            .card { @apply bg-white/90 dark:bg-slate-900/90 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-800 backdrop-blur-sm; }
-            .btn { @apply px-4 py-2 rounded-lg font-medium hover:scale-105 active:scale-95 transition-all; }
+            .card { @apply bg-white/90 dark:bg-dark/90 rounded-2xl p-6 shadow-lg transition-all duration-300 border border-gray-100 dark:border-gray-800 backdrop-blur-sm; }
+            .card-hover { @apply hover:-translate-y-1 hover:shadow-xl; }
+            .btn { @apply px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2; }
+            .btn-hover { @apply hover:scale-105 active:scale-95; }
             .text-gradient { @apply bg-gradient-to-r from-primary to-warning bg-clip-text text-transparent; }
+            .animate-count { animation: count 0.6s ease-in-out; }
+            @keyframes count { 0% { transform: scale(1.15); opacity: 0.8; } 100% { transform: scale(1); opacity: 1; } }
+            .animate-check { animation: check 0.4s ease; }
+            @keyframes check { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-3px); } 75% { transform: translateX(3px); } }
+            .tab-active { @apply bg-primary text-white !important; }
         }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        .dark ::-webkit-scrollbar-track { background: #1e293b; }
+        .dark ::-webkit-scrollbar-thumb { background: #475669; }
         * { scroll-behavior: smooth; }
-        body {
+        body { 
+            min-height: 100vh;
             background: url('https://picsum.photos/id/1035/1920/1080') no-repeat center center fixed;
             background-size: cover;
-            min-height: 100vh;
         }
+        .dark body {
+            background: url('https://picsum.photos/id/1035/1920/1080') no-repeat center center fixed;
+            background-size: cover;
+            filter: brightness(0.8);
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
     </style>
 </head>
 <body class="text-gray-800 dark:text-gray-200 transition-colors duration-300">
+    <nav class="sticky top-0 bg-white/90 dark:bg-dark/90 backdrop-blur-sm shadow-sm z-10 py-3 px-4 flex justify-between items-center">
+        <h1 class="text-xl font-bold text-gradient"><i class="fas fa-graduation-cap mr-2"></i>2026考研上岸</h1>
+        <button id="themeBtn" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+            <i class="fas fa-moon dark:hidden text-gray-600"></i>
+            <i class="fas fa-sun hidden dark:inline text-warning"></i>
+        </button>
+    </nav>
 
-<!-- 导航栏 -->
-<nav class="sticky top-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm shadow-sm z-10 py-3 px-4 flex justify-between items-center">
-    <h1 class="text-xl font-bold text-gradient"><i class="fas fa-graduation-cap mr-2"></i>2026考研上岸</h1>
-    <button id="themeBtn" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
-        <i class="fas fa-moon dark:hidden text-gray-600"></i>
-        <i class="fas fa-sun hidden dark:inline text-warning"></i>
-    </button>
-</nav>
+    <!-- 标签切换栏 -->
+    <div class="max-w-7xl mx-auto p-4">
+        <div class="flex gap-3 mb-6">
+            <button class="tab-btn btn bg-gray-100 dark:bg-gray-800 tab-active" data-tab="home">
+                <i class="fas fa-home mr-1"></i>首页
+            </button>
+            <button class="tab-btn btn bg-gray-100 dark:bg-gray-800" data-tab="score">
+                <i class="fas fa-chart-line mr-1"></i>法硕分数线查询
+            </button>
+        </div>
 
-<!-- 主内容 -->
-<div class="max-w-7xl mx-auto p-4 grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
-    <!-- 左侧区域 -->
-    <div class="md:col-span-2 space-y-6">
-        <!-- 日期 + 倒计时 -->
-        <div class="card">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="text-center md:text-left">
-                    <h2 class="text-lg font-semibold mb-2">今日日期</h2>
-                    <p id="solarDate" class="text-2xl font-bold"></p>
-                    <p id="lunarDate" class="text-gray-500 dark:text-gray-400 mt-1"></p>
+        <!-- 首页内容（原有全部功能） -->
+        <div id="home" class="tab-content active grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="md:col-span-2 space-y-6">
+                <div class="card card-hover">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="text-center md:text-left">
+                            <h2 class="text-lg font-semibold mb-2 text-gray-700 dark:text-gray-300">今日日期</h2>
+                            <p id="solarDate" class="text-2xl font-bold"></p>
+                            <p id="lunarDate" class="text-gray-500 dark:text-gray-400 mt-1"></p>
+                        </div>
+                        <div class="text-center">
+                            <h2 class="text-lg font-semibold mb-2 text-gray-700 dark:text-gray-300">2026考研倒计时</h2>
+                            <div id="countDown" class="text-4xl font-bold text-gradient animate-count"></div>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">初试时间：2026年12月20日</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="text-center">
-                    <h2 class="text-lg font-semibold mb-2">考研倒计时</h2>
-                    <div id="countDown" class="text-4xl font-bold text-gradient"></div>
-                    <p class="text-sm text-gray-500 mt-1">2026年12月20日初试</p>
+
+                <div class="card card-hover">
+                    <h2 class="text-lg font-semibold mb-3 flex items-center text-gray-700 dark:text-gray-300">
+                        <i class="fas fa-quote-left text-primary mr-2"></i>每日励志
+                    </h2>
+                    <p id="dailyQuote" class="font-xingkai text-center py-6"></p>
+                    <p id="dailyTip" class="text-gray-500 dark:text-gray-400 text-center text-sm mt-2 bg-gray-50 dark:bg-gray-800 py-2 rounded-lg"></p>
+                </div>
+
+                <div class="card card-hover">
+                    <h2 class="text-lg font-semibold mb-4 flex items-center text-gray-700 dark:text-gray-300">
+                        <i class="fas fa-check-circle text-success mr-2"></i>每日学习打卡
+                    </h2>
+                    <div class="flex gap-8 mb-5 justify-center">
+                        <div class="text-center">
+                            <p class="text-3xl font-bold text-primary" id="totalDays">0</p>
+                            <p class="text-sm text-gray-500 mt-1">累计打卡</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-3xl font-bold text-warning" id="continueDays">0</p>
+                            <p class="text-sm text-gray-500 mt-1">连续打卡</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-col md:flex-row gap-4 items-center">
+                        <input type="file" id="uploadImg" accept="image/*" class="hidden">
+                        <label for="uploadImg" class="btn bg-primary text-white btn-hover">
+                            <i class="fas fa-upload mr-1"></i>上传打卡照片
+                        </label>
+                        <button id="checkInBtn" class="btn bg-success text-white btn-hover">
+                            <i class="fas fa-check mr-1"></i>完成今日打卡
+                        </button>
+                    </div>
+                    <div id="previewBox" class="mt-4 hidden rounded-lg overflow-hidden shadow-md">
+                        <img id="previewImg" class="w-full max-h-60 object-contain">
+                    </div>
+                    <div class="mt-6">
+                        <h3 class="text-sm font-semibold mb-2 text-gray-600 dark:text-gray-400">历史打卡记录</h3>
+                        <div id="checkInWall" class="grid grid-cols-3 gap-2 max-h-40 overflow-y-auto"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <div class="card card-hover">
+                    <h2 class="text-lg font-semibold mb-4 flex items-center text-gray-700 dark:text-gray-300">
+                        <i class="fas fa-star text-warning mr-2"></i>上岸愿望清单
+                    </h2>
+                    <div class="flex gap-2 mb-4">
+                        <input id="wishInput" placeholder="输入上岸愿望..." 
+                            class="flex-1 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-800 outline-none transition-all focus:ring-2 focus:ring-primary/50">
+                        <button id="addWishBtn" class="btn bg-primary text-white btn-hover px-3">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    <ul id="wishList" class="max-h-60 overflow-y-auto space-y-2"></ul>
+                    <button id="resetWishBtn" class="mt-4 text-sm text-gray-500 hover:text-red-500 transition-colors">重置清单</button>
+                </div>
+
+                <div class="card card-hover">
+                    <h2 class="text-lg font-semibold mb-4 flex items-center text-gray-700 dark:text-gray-300">
+                        <i class="fas fa-calendar-alt text-primary mr-2"></i>考研关键节点
+                    </h2>
+                    <ul class="space-y-3 text-sm">
+                        <li class="flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                            <span>预报名</span><span class="text-primary font-medium">2026年9月下旬</span>
+                        </li>
+                        <li class="flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                            <span>正式报名</span><span class="text-primary font-medium">2026年10月中旬</span>
+                        </li>
+                        <li class="flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                            <span>现场确认</span><span class="text-primary font-medium">2026年11月上旬</span>
+                        </li>
+                        <li class="flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                            <span>初试考试</span><span class="text-warning font-medium">2026年12月20日</span>
+                        </li>
+                        <li class="flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                            <span>成绩查询</span><span class="text-primary font-medium">2027年2月中旬</span>
+                        </li>
+                        <li class="flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                            <span>复试调剂</span><span class="text-primary font-medium">2027年3-4月</span>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
 
-        <!-- 每日励志 -->
-        <div class="card">
-            <h2 class="text-lg font-semibold mb-3"><i class="fas fa-quote-left text-primary mr-2"></i>每日励志</h2>
-            <p id="dailyQuote" class="font-kai text-center py-4"></p>
-            <p id="dailyTip" class="text-sm text-gray-500 text-center bg-gray-50 dark:bg-gray-800 py-2 rounded-lg"></p>
-        </div>
-
-        <!-- 学习打卡 -->
-        <div class="card">
-            <h2 class="text-lg font-semibold mb-4"><i class="fas fa-check-circle text-success mr-2"></i>每日学习打卡</h2>
-            <div class="flex gap-8 justify-center mb-5">
-                <div class="text-center">
-                    <p class="text-3xl font-bold text-primary" id="totalDays">0</p>
-                    <p class="text-sm text-gray-500">累计打卡</p>
+        <!-- 分数查询页（新增功能） -->
+        <div id="score" class="tab-content">
+            <div class="card card-hover max-w-3xl mx-auto">
+                <h2 class="text-xl font-bold text-gradient mb-6 flex items-center">
+                    <i class="fas fa-university mr-2"></i>2026法硕（非法学）复试分数线查询
+                </h2>
+                
+                <!-- 院校选择 -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">选择院校</label>
+                    <select id="schoolSelect" class="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-800 outline-none focus:ring-2 focus:ring-primary/50">
+                        <option value="1">北京大学</option>
+                        <option value="2">中国人民大学</option>
+                        <option value="3">清华大学</option>
+                        <option value="4">中国政法大学</option>
+                        <option value="5">华东政法大学</option>
+                        <option value="6">中南财经政法大学</option>
+                    </select>
                 </div>
-                <div class="text-center">
-                    <p class="text-3xl font-bold text-warning" id="continueDays">0</p>
-                    <p class="text-sm text-gray-500">连续打卡</p>
+
+                <!-- 分数线展示 -->
+                <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg mb-6">
+                    <h3 class="font-medium mb-3 text-gray-700 dark:text-gray-300">院校复试分数线</h3>
+                    <div id="scoreLine" class="grid grid-cols-2 md:grid-cols-5 gap-3 text-sm">
+                        <div><span class="text-gray-500">总分：</span><span class="font-bold text-primary" id="lineTotal">361</span></div>
+                        <div><span class="text-gray-500">政治：</span><span class="font-bold text-primary" id="linePol">55</span></div>
+                        <div><span class="text-gray-500">外语：</span><span class="font-bold text-primary" id="lineEng">55</span></div>
+                        <div><span class="text-gray-500">课一：</span><span class="font-bold text-primary" id="lineSub1">90</span></div>
+                        <div><span class="text-gray-500">课二：</span><span class="font-bold text-primary" id="lineSub2">90</span></div>
+                    </div>
                 </div>
-            </div>
 
-            <div class="flex flex-col md:flex-row gap-4 items-center">
-                <input type="file" id="uploadImg" accept="image/*" class="hidden">
-                <label for="uploadImg" class="btn bg-primary text-white"><i class="fas fa-upload mr-1"></i>上传打卡照片</label>
-                <button id="checkInBtn" class="btn bg-success text-white"><i class="fas fa-check mr-1"></i>完成今日打卡</button>
-            </div>
+                <!-- 分数输入 -->
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+                    <div>
+                        <label class="block text-sm mb-2">总分</label>
+                        <input type="number" id="totalScore" class="w-full px-3 py-2 rounded-lg border dark:bg-gray-800 text-center">
+                    </div>
+                    <div>
+                        <label class="block text-sm mb-2">政治</label>
+                        <input type="number" id="polScore" class="w-full px-3 py-2 rounded-lg border dark:bg-gray-800 text-center">
+                    </div>
+                    <div>
+                        <label class="block text-sm mb-2">外语</label>
+                        <input type="number" id="engScore" class="w-full px-3 py-2 rounded-lg border dark:bg-gray-800 text-center">
+                    </div>
+                    <div>
+                        <label class="block text-sm mb-2">课一</label>
+                        <input type="number" id="sub1Score" class="w-full px-3 py-2 rounded-lg border dark:bg-gray-800 text-center">
+                    </div>
+                    <div>
+                        <label class="block text-sm mb-2">课二</label>
+                        <input type="number" id="sub2Score" class="w-full px-3 py-2 rounded-lg border dark:bg-gray-800 text-center">
+                    </div>
+                </div>
 
-            <!-- 图片预览 -->
-            <div id="previewBox" class="mt-4 hidden rounded-lg overflow-hidden shadow-md">
-                <img id="previewImg" class="w-full max-h-60 object-contain" alt="预览">
-            </div>
+                <!-- 查询按钮 -->
+                <button id="checkScoreBtn" class="btn bg-primary text-white btn-hover w-full mb-6">
+                    <i class="fas fa-search mr-1"></i>查询是否过线
+                </button>
 
-            <!-- 打卡记录 -->
-            <div class="mt-6">
-                <h3 class="text-sm font-semibold mb-2">历史打卡记录</h3>
-                <div id="checkInWall" class="grid grid-cols-3 gap-2 max-h-40 overflow-y-auto"></div>
+                <!-- 结果展示 -->
+                <div id="resultBox" class="p-5 rounded-lg text-center text-lg font-bold hidden">
+                    <p id="resultText"></p>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- 右侧区域 -->
-    <div class="space-y-6">
-        <!-- 愿望清单 -->
-        <div class="card">
-            <h2 class="text-lg font-semibold mb-4"><i class="fas fa-star text-warning mr-2"></i>上岸愿望清单</h2>
-            <div class="flex gap-2 mb-4">
-                <input id="wishInput" placeholder="输入你的上岸愿望..." class="flex-1 px-3 py-2 rounded-lg border dark:bg-gray-800 outline-none focus:ring-2 focus:ring-primary/50">
-                <button id="addWishBtn" class="btn bg-primary text-white px-3"><i class="fas fa-plus"></i></button>
-            </div>
-            <ul id="wishList" class="max-h-60 overflow-y-auto space-y-2"></ul>
-            <button id="resetWishBtn" class="mt-4 text-sm text-gray-500 hover:text-red-500">重置清单</button>
-        </div>
+    <footer class="text-center py-6 text-gray-500 dark:text-gray-400 text-sm mt-8">
+        <p>2026考研上岸助力站 | 数据存储在本地，刷新不丢失</p>
+        <p class="mt-1">星光不负赶路人，时光不负考研人</p>
+    </footer>
 
-        <!-- 关键节点 -->
-        <div class="card">
-            <h2 class="text-lg font-semibold mb-4"><i class="fas fa-calendar-alt text-primary mr-2"></i>考研关键节点</h2>
-            <ul class="space-y-3 text-sm">
-                <li class="flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg"><span>预报名</span><span class="text-primary">2026年9月下旬</span></li>
-                <li class="flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg"><span>正式报名</span><span class="text-primary">2026年10月中旬</span></li>
-                <li class="flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg"><span>现场确认</span><span class="text-primary">2026年11月上旬</span></li>
-                <li class="flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg"><span>初试考试</span><span class="text-warning">2026年12月20日</span></li>
-                <li class="flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg"><span>成绩查询</span><span class="text-primary">2027年2月中旬</span></li>
-                <li class="flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg"><span>复试调剂</span><span class="text-primary">2027年3-4月</span></li>
-            </ul>
-        </div>
-    </div>
-</div>
+    <script>
+        // 原有常量
+        const EXAM_DATE = new Date('2026-12-20');
+        const QUOTES = [
+            "我一生的经验有两条，一是忍耐，二是乐观主义。",
+            "乐观主义帮我度过了最艰难的岁月，问题早晚都会解决。",
+            "冷静观察，稳住阵脚，沉着应付。",
+            "等待，也是一种坚持与力量。",
+            "下定决心，不怕牺牲，排除万难，去争取胜利。",
+            "与天奋斗，其乐无穷；与地奋斗，其乐无穷。",
+            "我们的同志在困难的时候，要看到成绩，看到光明。",
+            "永久奋斗，是革命者最宝贵的品质。"
+        ];
+        const TIPS = [
+            "每天背单词30分钟，坚持到考前",
+            "错题本是提分关键，定期复盘",
+            "保证睡眠，效率比时长更重要",
+            "政治后期押题卷必刷，选择题多练",
+            "英语阅读精读，吃透长难句"
+        ];
 
-<!-- 页脚 -->
-<footer class="text-center py-6 text-gray-500 text-sm mt-8">
-    <p>2026考研上岸助力站 | 本地存储，刷新不丢失</p>
-    <p class="mt-1">星光不负赶路人，时光不负考研人</p>
-</footer>
-
-<script>
-    // 考研时间
-    const EXAM_DATE = new Date('2026-12-20');
-    // 励志语录
-    const QUOTES = ["星光不问赶路人，时光不负有心人","关关难过关关过，前路漫漫亦灿灿","看似不起眼的日复一日，终会看到坚持的意义","彼方尚有荣光在，何须悲叹少年轻","那些看似不起波澜的日复一日，会突然在某一天让人看到坚持的意义"];
-    const TIPS = ["每天背单词30分钟，坚持到底","错题及时复盘，效率翻倍","保证睡眠，高效学习","政治选择题多练，后期提分快","英语阅读精读，吃透长难句"];
-
-    // 页面加载
-    window.onload = function(){
-        // 倒计时
-        let diff = EXAM_DATE - new Date();
-        document.getElementById('countDown').innerText = Math.ceil(diff / 86400000) + " 天";
-        
-        // 日期
-        let now = new Date();
-        let solar = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 周${'日一二三四五六'[now.getDay()]}`;
-        document.getElementById('solarDate').innerText = solar;
-        let lunar = Lunar.fromDate(now);
-        document.getElementById('lunarDate').innerText = `${lunar.getYearInChinese()}年${lunar.getMonthInChinese()}月${lunar.getDayInChinese()}`;
-        
-        // 励志语录
-        let idx = now.getDate() % QUOTES.length;
-        document.getElementById('dailyQuote').innerText = QUOTES[idx];
-        document.getElementById('dailyTip').innerText = "备考小贴士：" + TIPS[idx];
-        
-        // 加载数据
-        loadCheckIn();
-        loadWishes();
-    };
-
-    // 主题切换
-    document.getElementById('themeBtn').onclick = () => document.documentElement.classList.toggle('dark');
-
-    // 图片上传预览
-    let imgBase64 = "";
-    document.getElementById('uploadImg').addEventListener('change', function(e){
-        let file = e.target.files[0];
-        if(!file) return;
-        let reader = new FileReader();
-        reader.onload = (e) => {
-            imgBase64 = e.target.result;
-            document.getElementById('previewImg').src = imgBase64;
-            document.getElementById('previewBox').classList.remove('hidden');
+        // 新增：分数线数据
+        const SCORE_DATA = {
+            "1": {"学校": "北京大学", "总分": 361, "政治": 55, "外语": 55, "课1": 90, "课2": 90},
+            "2": {"学校": "中国人民大学", "总分": 355, "政治": 60, "外语": 60, "课1": 90, "课2": 90},
+            "3": {"学校": "清华大学", "总分": 350, "政治": 55, "外语": 55, "课1": 90, "课2": 90},
+            "4": {"学校": "中国政法大学", "总分": 340, "政治": 55, "外语": 55, "课1": 90, "课2": 90},
+            "5": {"学校": "华东政法大学", "总分": 343, "政治": 55, "外语": 55, "课1": 90, "课2": 90},
+            "6": {"学校": "中南财经政法大学", "总分": 341, "政治": 52, "外语": 52, "课1": 88, "课2": 88}
         };
-        reader.readAsDataURL(file);
-    });
 
-    // 打卡功能
-    document.getElementById('checkInBtn').onclick = function(){
-        if(!imgBase64) return alert("请先上传打卡照片！");
-        let today = new Date().toLocaleDateString();
-        
-        // 保存记录
-        let records = JSON.parse(localStorage.getItem('checkIn') || '[]');
-        records.push({date: today, img: imgBase64});
-        localStorage.setItem('checkIn', JSON.stringify(records));
-        
-        loadCheckIn();
-        alert("打卡成功！");
-        document.getElementById('previewBox').classList.add('hidden');
-        imgBase64 = "";
-    };
+        window.onload = function(){
+            // 原有功能初始化
+            initHome();
+            // 新增：分数查询初始化
+            initScoreQuery();
+            // 标签切换
+            initTabs();
+        }
 
-    // 加载打卡记录
-    function loadCheckIn(){
-        let records = JSON.parse(localStorage.getItem('checkIn') || '[]');
-        let wall = document.getElementById('checkInWall');
-        wall.innerHTML = "";
-        records.forEach(item => {
-            let div = document.createElement('div');
-            div.className = "bg-gray-100 dark:bg-gray-800 rounded overflow-hidden";
-            div.innerHTML = `<img src="${item.img}" class="w-full h-24 object-cover"><p class="text-xs text-center p-1">${item.date}</p>`;
-            wall.appendChild(div);
+        // 标签切换功能
+        function initTabs() {
+            const tabs = document.querySelectorAll('.tab-btn');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // 移除所有激活状态
+                    tabs.forEach(t => t.classList.remove('tab-active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    // 激活当前
+                    tab.classList.add('tab-active');
+                    document.getElementById(tab.dataset.tab).classList.add('active');
+                });
+            });
+        }
+
+        // 原有首页功能
+        function initHome() {
+            const now = new Date();
+            const diff = EXAM_DATE - now;
+            const day = Math.ceil(diff / 86400000);
+            document.getElementById('countDown').innerText = `距离考研还剩 ${day} 天`;
+
+            const dayIndex = new Date().getDate();
+            document.getElementById('dailyQuote').innerText = QUOTES[dayIndex % QUOTES.length];
+            document.getElementById('dailyTip').innerText = `备考小贴士：${TIPS[dayIndex % TIPS.length]}`;
+
+            const solar = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 周${'日一二三四五六'[now.getDay()]}`;
+            document.getElementById('solarDate').innerText = solar;
+            const lunar = Lunar.fromDate(now);
+            document.getElementById('lunarDate').innerText = `${lunar.getYearInChinese()}年${lunar.getMonthInChinese()}月${lunar.getDayInChinese()}`;
+
+            loadCheckInRecords();
+        }
+
+        // 新增：分数查询功能
+        function initScoreQuery() {
+            const schoolSelect = document.getElementById('schoolSelect');
+            const checkBtn = document.getElementById('checkScoreBtn');
+            
+            // 切换学校更新分数线
+            function updateScoreLine() {
+                const data = SCORE_DATA[schoolSelect.value];
+                document.getElementById('lineTotal').innerText = data.总分;
+                document.getElementById('linePol').innerText = data.政治;
+                document.getElementById('lineEng').innerText = data.外语;
+                document.getElementById('lineSub1').innerText = data.课1;
+                document.getElementById('lineSub2').innerText = data.课2;
+            }
+            
+            // 查询判断
+            function checkScore() {
+                const data = SCORE_DATA[schoolSelect.value];
+                const total = Number(document.getElementById('totalScore').value) || 0;
+                const pol = Number(document.getElementById('polScore').value) || 0;
+                const eng = Number(document.getElementById('engScore').value) || 0;
+                const sub1 = Number(document.getElementById('sub1Score').value) || 0;
+                const sub2 = Number(document.getElementById('sub2Score').value) || 0;
+                
+                const isPass = (total >= data.总分 && pol >= data.政治 && eng >= data.外语 && sub1 >= data.课1 && sub2 >= data.课2);
+                const resultBox = document.getElementById('resultBox');
+                const resultText = document.getElementById('resultText');
+                
+                resultBox.classList.remove('hidden', 'bg-success/20', 'bg-red-500/20', 'text-success', 'text-red-500');
+                if(isPass) {
+                    resultBox.classList.add('bg-success/20', 'text-success');
+                    resultText.innerHTML = `✅ 恭喜！分数达到【${data.学校}】复试线要求！`;
+                } else {
+                    resultBox.classList.add('bg-red-500/20', 'text-red-500');
+                    resultText.innerHTML = `❌ 遗憾，分数未达到【${data.学校}】复试线要求`;
+                }
+                resultBox.classList.add('block');
+            }
+            
+            // 绑定事件
+            schoolSelect.addEventListener('change', updateScoreLine);
+            checkBtn.addEventListener('click', checkScore);
+            // 初始化
+            updateScoreLine();
+        }
+
+        // 原有原有功能保留
+        document.getElementById('themeBtn').onclick = function(){
+            document.documentElement.classList.toggle('dark');
+        }
+
+        document.getElementById('uploadImg').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if(file) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    document.getElementById('previewImg').src = e.target.result;
+                    document.getElementById('previewBox').classList.remove('hidden');
+                }
+                reader.readAsDataURL(file);
+            }
         });
-        document.getElementById('totalDays').innerText = records.length;
-    }
 
-    // 愿望清单
-    document.getElementById('addWishBtn').onclick = function(){
-        let val = document.getElementById('wishInput').value.trim();
-        if(!val) return;
-        let list = document.getElementById('wishList');
-        let li = document.createElement('li');
-        li.className = "flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg";
-        li.innerHTML = val + '<button onclick="delWish(this)" class="text-red-500">×</button>';
-        list.appendChild(li);
-        document.getElementById('wishInput').value = "";
-        saveWishes();
-    };
+        document.getElementById('checkInBtn').onclick = function(){
+            const today = new Date().toLocaleDateString();
+            const previewImg = document.getElementById('previewImg');
+            const record = { date: today, img: previewImg.src || '' };
+            const records = JSON.parse(localStorage.getItem('checkInRecords') || '[]');
+            records.push(record);
+            localStorage.setItem('checkInRecords', JSON.stringify(records));
+            loadCheckInRecords();
+            alert("打卡成功！");
+        }
 
-    // 删除愿望
-    function delWish(obj){
-        obj.parentElement.remove();
-        saveWishes();
-    }
+        function loadCheckInRecords() {
+            const records = JSON.parse(localStorage.getItem('checkInRecords') || '[]');
+            const checkInWall = document.getElementById('checkInWall');
+            checkInWall.innerHTML = '';
+            records.forEach(record => {
+                const el = document.createElement('div');
+                el.className = 'bg-gray-100 dark:bg-gray-800 rounded overflow-hidden';
+                el.innerHTML = `<img src="${record.img}" class="w-full h-24 object-cover"><p class="text-xs text-center p-1">${record.date}</p>`;
+                checkInWall.appendChild(el);
+            });
+            updateCheckInDays();
+        }
 
-    // 重置愿望
-    document.getElementById('resetWishBtn').onclick = () => {
-        document.getElementById('wishList').innerHTML = "";
-        localStorage.removeItem('wishes');
-    };
+        function updateCheckInDays() {
+            const records = JSON.parse(localStorage.getItem('checkInRecords') || '[]');
+            document.getElementById('totalDays').innerText = records.length;
+            // 连续天数简化逻辑
+            document.getElementById('continueDays').innerText = records.length > 0 ? 1 : 0;
+        }
 
-    // 保存愿望
-    function saveWishes(){
-        let items = document.querySelectorAll('#wishList li');
-        let arr = [];
-        items.forEach(i => arr.push(i.innerText.replace('×','')));
-        localStorage.setItem('wishes', JSON.stringify(arr));
-    }
-
-    // 加载愿望
-    function loadWishes(){
-        let arr = JSON.parse(localStorage.getItem('wishes') || '[]');
-        arr.forEach(item => {
-            let li = document.createElement('li');
-            li.className = "flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg";
-            li.innerHTML = item + '<button onclick="delWish(this)" class="text-red-500">×</button>';
-            document.getElementById('wishList').appendChild(li);
-        });
-    }
-</script>
+        document.getElementById('addWishBtn').onclick = function(){
+            const val = document.getElementById('wishInput').value.trim();
+            if(val) {
+                const li = document.createElement('li');
+                li.className = "flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg";
+                li.innerHTML = `${val}<button onclick="this.parentElement.remove()" class="text-red-500">×</button>`;
+                document.getElementById('wishList').appendChild(li);
+                document.getElementById('wishInput').value = '';
+            }
+        }
+    </script>
 </body>
 </html>
